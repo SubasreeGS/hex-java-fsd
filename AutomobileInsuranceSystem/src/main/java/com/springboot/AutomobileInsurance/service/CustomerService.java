@@ -24,14 +24,17 @@ public class CustomerService {
     private final UserService userService;
 
     public void insertCustomer(CustomerDto dto) {
-        User user = userService.getUserObj(
-                dto.username(),
-                dto.password(),
-                Role.CUSTOMER
+        //prepare user
+            User user = userService.getUserObj(
+                    dto.username(),
+                    dto.password(),
+                    Role.CUSTOMER
         );
-
+        //convert dto to entity
         Customer customer = CustomerMapper.convertDtoToEntity(dto);
+        //inject user into customer
         customer.setUser(user);
+        //save customer in db
         customerRepository.save(customer);
     }
 
