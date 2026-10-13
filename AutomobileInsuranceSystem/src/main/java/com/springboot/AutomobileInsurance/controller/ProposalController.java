@@ -22,6 +22,12 @@ public class ProposalController {
         return proposalService.submitProposal(dto);
     }
 
+    @PutMapping("/api/proposal/assign/{inspectorId}/{proposalId}")
+    public void assignInspector(@PathVariable Long inspectorId,
+                                @PathVariable Long proposalId) {
+        proposalService.assignInspector(inspectorId, proposalId);
+    }
+
     @GetMapping("/api/proposal/{id}")
     public ProposalResponseDto getById(@PathVariable long id) {
         return proposalService.getById(id);
