@@ -24,29 +24,28 @@ public class OfficerService {
     private final UserService userService;
 
     public void insertOfficer(OfficerDto dto) {
-        // Step 1: Save User with Role.OFFICER
+        // Step 1: Prepare user
         User user = userService.getUserObj(
                 dto.username(),
                 dto.password(),
                 Role.OFFICER
         );
 
-        // Step 2: Map to Officer entity
+        // Step 2: Map dto to obj
         Officer officer = OfficerMapper.convertDtoToEntity(dto);
 
         // Step 3: Attach User to Officer
         officer.setUser(user);
 
-        // Step 4: Save Officer
+        // Step 4: Save officer
         officerRepository.save(officer);
     }
 
     public OfficerResponseDto getById(long id) {
-        Optional<Officer> optional = officerRepository.findById(id);
-        if (optional.isEmpty()) {
-            throw new ResourceNotFoundException("Invalid officer id");
-        }
-        return OfficerMapper.convertEntityToDto(optional.get());
+        Officer officer = officerRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Invalid officer id"));
+
+        return OfficerMapper.convertEntityToDto(officer);
     }
 
     public List<OfficerResponseDto> getAll() {

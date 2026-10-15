@@ -1,5 +1,6 @@
 package com.springboot.AutomobileInsurance.controller;
 
+import com.springboot.AutomobileInsurance.dto.request.ApproveIdvDto;
 import com.springboot.AutomobileInsurance.dto.request.ProposalSubmissionDto;
 import com.springboot.AutomobileInsurance.dto.response.ProposalResponseDto;
 import com.springboot.AutomobileInsurance.enums.ProposalStatus;
@@ -12,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-
 public class ProposalController {
 
     private final ProposalService proposalService;
@@ -26,6 +26,12 @@ public class ProposalController {
     public void assignInspector(@PathVariable Long inspectorId,
                                 @PathVariable Long proposalId) {
         proposalService.assignInspector(inspectorId, proposalId);
+    }
+
+    @PutMapping("/api/proposal/approve-idv/{proposalId}")
+    public void approveIdv(@PathVariable Long proposalId,
+                           @Valid @RequestBody ApproveIdvDto dto) {
+        proposalService.approveIdv(proposalId, dto);
     }
 
     @GetMapping("/api/proposal/{id}")
@@ -46,5 +52,10 @@ public class ProposalController {
     @GetMapping("/api/proposal/status/{status}")
     public List<ProposalResponseDto> getByStatus(@PathVariable ProposalStatus status) {
         return proposalService.getByStatus(status);
+    }
+
+    @GetMapping("/api/proposal/officer/{officerId}")
+    public List<ProposalResponseDto> getByOfficerId(@PathVariable long officerId) {
+        return proposalService.getByOfficerId(officerId);
     }
 }

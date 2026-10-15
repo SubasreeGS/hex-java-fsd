@@ -1,7 +1,9 @@
 package com.springboot.AutomobileInsurance.service;
 
+import com.springboot.AutomobileInsurance.dto.request.ApproveIdvDto;
 import com.springboot.AutomobileInsurance.dto.request.ProposalSubmissionDto;
 import com.springboot.AutomobileInsurance.dto.response.ProposalResponseDto;
+import com.springboot.AutomobileInsurance.enums.InspectionResult;
 import com.springboot.AutomobileInsurance.enums.InspectionStatus;
 import com.springboot.AutomobileInsurance.enums.PolicyType;
 import com.springboot.AutomobileInsurance.enums.ProposalStatus;
@@ -61,31 +63,46 @@ public class ProposalService {
     }
 
     public void assignInspector(Long inspectorId, Long proposalId) {
-        // Step 1: Validate Inspector
         Inspector inspector = inspectorRepository.findById(inspectorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inspector not found with id: " + inspectorId));
 
-        // Step 2: Validate Proposal
         Proposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal not found with id: " + proposalId));
 
-        // Step 3: Verify proposal status
         if (proposal.getStatus() != ProposalStatus.PROPOSAL_SUBMITTED && proposal.getStatus() != ProposalStatus.UNDER_REVIEW) {
             throw new InvalidCallException("Cannot assign inspector. Proposal is in state: " + proposal.getStatus());
         }
 
-        // Step 4: Update proposal state
         proposal.setStatus(ProposalStatus.INSPECTOR_ASSIGNED);
         proposalRepository.save(proposal);
 
-        // Step 5: Schedule inspection
         Inspection inspection = new Inspection();
         inspection.setProposal(proposal);
         inspection.setInspector(inspector);
         inspection.setStatus(InspectionStatus.SCHEDULED);
-
-        // Step 6: save in db
         inspectionRepository.save(inspection);
+    }
+
+    public void approveIdv(Long proposalId, ApproveIdvDto dto) {
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found with id: " + proposalId));
+
+        if (proposal.getStatus() != ProposalStatus.INSPECTION_COMPLETED) {
+            throw new InvalidCallException("Cannot approve IDV. Proposal status must be INSPECTION_COMPLETED, current is: " + proposal.getStatus());
+        }
+
+        Inspection inspection = inspectionRepository.findByProposalId(proposalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inspection not found for proposal id: " + proposalId));
+
+        if (inspection.getResult() != InspectionResult.PASSED) {
+            throw new InvalidCallException("Cannot approve IDV for a failed inspection.");
+        }
+
+        inspection.setApprovedIdv(dto.approvedIdv());
+        inspectionRepository.save(inspection);
+
+        proposal.setStatus(ProposalStatus.IDV_APPROVED);
+        proposalRepository.save(proposal);
     }
 
     public ProposalResponseDto getById(long id) {
@@ -112,6 +129,14 @@ public class ProposalService {
 
     public List<ProposalResponseDto> getByStatus(ProposalStatus status) {
         return proposalRepository.findByStatus(status)
+                .stream()
+                .map(ProposalMapper::convertEntityToDto)
+                .toList();
+    }
+
+    public List<ProposalResponseDto> getByOfficerId(long officerId) {
+        // Step 1: Query all proposals assigned to the specific officer
+        return proposalRepository.findByOfficerId(officerId)
                 .stream()
                 .map(ProposalMapper::convertEntityToDto)
                 .toList();

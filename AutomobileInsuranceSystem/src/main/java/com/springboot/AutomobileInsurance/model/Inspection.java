@@ -21,19 +21,22 @@ public class Inspection {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "proposal_id",referencedColumnName = "id",nullable = false, unique = true)
+    @JoinColumn(name = "proposal_id", referencedColumnName = "id", nullable = false, unique = true)
     private Proposal proposal;
 
     @ManyToOne
-    @JoinColumn(name = "inspector_id",referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "inspector_id", referencedColumnName = "id", nullable = false)
     private Inspector inspector;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "result",length = 20)
+    @Column(name = "result", length = 20)
     private InspectionResult result;
 
-    @Column(name = "recommended_idv",  precision = 10, scale = 2)
+    @Column(name = "recommended_idv", precision = 10, scale = 2)
     private BigDecimal recommendedIdv;
+
+    @Column(name = "approved_idv", precision = 10, scale = 2)
+    private BigDecimal approvedIdv;
 
     @Column(name = "inspection_photos_url", length = 500)
     private String inspectionPhotosUrl;
@@ -42,7 +45,6 @@ public class Inspection {
     private String inspectionNotes;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status",nullable = false, length = 30)
+    @Column(name = "status", nullable = false, length = 30)
     private InspectionStatus status;
-
 }

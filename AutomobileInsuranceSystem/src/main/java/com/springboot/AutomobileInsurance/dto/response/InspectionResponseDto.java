@@ -14,6 +14,7 @@ public record InspectionResponseDto(
         String inspectorName,
         InspectionResult result,
         BigDecimal recommendedIdv,
+        BigDecimal approvedIdv,
         String inspectionPhotosUrl,
         String inspectionNotes,
         InspectionStatus inspectionStatus

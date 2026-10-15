@@ -19,26 +19,31 @@ public class OfficerController {
 
     @PostMapping("/api/officer/add")
     public void insertOfficer(@Valid @RequestBody OfficerDto officerDto) {
+
         officerService.insertOfficer(officerDto);
     }
 
     @GetMapping("/api/officer/{id}")
     public OfficerResponseDto getById(@PathVariable long id) {
+
         return officerService.getById(id);
     }
 
     @GetMapping("/api/officer/all")
     public List<OfficerResponseDto> getAll() {
+
         return officerService.getAll();
     }
 
     @DeleteMapping("/api/officer/{id}")
     public void deleteById(@PathVariable long id) {
+
         officerService.deleteById(id);
     }
 
     @PutMapping("/api/officer/{id}")
     public void update(@PathVariable Long id, @RequestBody OfficerUpdateDto dto) {
+
         officerService.update(id, dto);
     }
 }

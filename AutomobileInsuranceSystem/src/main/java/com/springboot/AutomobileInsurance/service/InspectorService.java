@@ -42,11 +42,10 @@ public class InspectorService {
     }
 
     public InspectorResponseDto getById(long id) {
-        Optional<Inspector> optional = inspectorRepository.findById(id);
-        if (optional.isEmpty()) {
-            throw new ResourceNotFoundException("Invalid inspector id");
-        }
-        return InspectorMapper.convertEntityToDto(optional.get());
+       Inspector inspector = inspectorRepository.findById(id)
+               .orElseThrow(()-> new ResourceNotFoundException("Invalid inspector id"));
+
+        return InspectorMapper.convertEntityToDto(inspector);
     }
 
     public List<InspectorResponseDto> getAll() {

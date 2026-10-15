@@ -85,7 +85,7 @@ public class CustomerService {
         }
 
         if (!flag) {
-            throw new InvalidCallException("Update op terminated");
+            throw new InvalidCallException("Update operation terminated");
         }
 
         customerRepository.save(customer);

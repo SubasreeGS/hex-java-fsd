@@ -14,6 +14,7 @@ public class InspectionMapper {
                 inspection.getInspector().getName(),
                 inspection.getResult(),
                 inspection.getRecommendedIdv(),
+                inspection.getApprovedIdv(),
                 inspection.getInspectionPhotosUrl(),
                 inspection.getInspectionNotes(),
                 inspection.getStatus()

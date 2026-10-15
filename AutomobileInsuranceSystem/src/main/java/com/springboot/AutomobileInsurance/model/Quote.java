@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,18 +23,30 @@ public class Quote {
     @JoinColumn(name = "proposal_id", referencedColumnName = "id", nullable = false, unique = true)
     private Proposal proposal;
 
-    @Column(name = "approved_idv", precision = 10, scale = 2)
-    private BigDecimal approvedIdv;
+    @Column(name = "tp_premium", nullable = false, precision = 10, scale = 2)
+    private BigDecimal tpPremium;
 
-    @Column(name = "third_party_premium", precision = 10, scale = 2)
-    private BigDecimal thirdPartyPremium;
+    @Column(name = "od_premium", nullable = false, precision = 10, scale = 2)
+    private BigDecimal odPremium;
 
-    @Column(name = "own_damage_premium", precision = 10, scale = 2)
-    private BigDecimal ownDamagePremium;
+    @Column(name = "zero_dep_premium", nullable = false, precision = 10, scale = 2)
+    private BigDecimal zeroDepPremium;
 
-    @Column(name = "addon_premium", precision = 10, scale = 2)
-    private BigDecimal addonPremium;
+    @Column(name = "engine_protect_premium", nullable = false, precision = 10, scale = 2)
+    private BigDecimal engineProtectPremium;
 
-    @Column(name = "total_payable", nullable = false, precision = 10, scale = 2)
-    private BigDecimal totalPayable;
+    @Column(name = "roadside_assist_premium", nullable = false, precision = 10, scale = 2)
+    private BigDecimal roadsideAssistPremium;
+
+    @Column(name = "net_premium", nullable = false, precision = 10, scale = 2)
+    private BigDecimal netPremium;
+
+    @Column(name = "tax_amount", nullable = false, precision = 10, scale = 2)
+    private BigDecimal taxAmount;
+
+    @Column(name = "total_premium", nullable = false, precision = 10, scale = 2)
+    private BigDecimal totalPremium;
+
+    @Column(name = "valid_until", nullable = false)
+    private LocalDate validUntil;
 }
