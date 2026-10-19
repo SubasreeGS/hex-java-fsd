@@ -2,7 +2,9 @@ package com.springboot.AutomobileInsurance.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 @NoArgsConstructor
@@ -11,23 +13,23 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Entity
-@Table(name = "customer")
+
 public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false,length = 255)
+    @Column(nullable = false,length = 255)
     private String name;
 
     @Column(name = "phone_no", nullable = false, length = 15)
     private String phoneNo;
 
-    @Column(name = "address",nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false,length = 500)
     private String address;
 
-    @Column(name = "dob", nullable = false)
+    @Column(nullable = false)
     private LocalDate dob;
 
     @Column(name = "aadhaar_no", nullable = false, unique = true, length = 12)
@@ -36,7 +38,9 @@ public class Customer {
     @Column(name = "pan_no", nullable = false, unique = true, length = 10)
     private String panNo;
 
+    @UpdateTimestamp
+    private Instant updatedAt;
+
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
     private User user;
 }

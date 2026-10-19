@@ -12,16 +12,12 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Entity
-@Table(name = "quote")
+
 public class Quote {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne
-    @JoinColumn(name = "proposal_id", referencedColumnName = "id", nullable = false, unique = true)
-    private Proposal proposal;
 
     @Column(name = "tp_premium", nullable = false, precision = 10, scale = 2)
     private BigDecimal tpPremium;
@@ -49,4 +45,8 @@ public class Quote {
 
     @Column(name = "valid_until", nullable = false)
     private LocalDate validUntil;
+
+    @OneToOne
+    @JoinColumn(name = "proposal_id",nullable = false)
+    private Proposal proposal;
 }

@@ -1,5 +1,6 @@
 package com.springboot.AutomobileInsurance.model;
 
+import com.springboot.AutomobileInsurance.enums.PolicyStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Entity
-@Table(name = "policy")
+
 public class Policy {
 
     @Id
@@ -21,14 +22,6 @@ public class Policy {
 
     @Column(name = "policy_number", nullable = false, unique = true, length = 50)
     private String policyNumber;
-
-    @OneToOne
-    @JoinColumn(name = "proposal_id", referencedColumnName = "id", nullable = false, unique = true)
-    private Proposal proposal;
-
-    @OneToOne
-    @JoinColumn(name = "payment_id", referencedColumnName = "id", nullable = false, unique = true)
-    private Payment payment;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
@@ -39,6 +32,16 @@ public class Policy {
     @Column(name = "total_premium", nullable = false, precision = 10, scale = 2)
     private BigDecimal totalPremium;
 
-    @Column(name = "policy_pdf_url", length = 500)
+    @Column(name = "policy_pdf_url", length = 600)
     private String policyPdfUrl;
+
+    @Enumerated(EnumType.STRING)
+    private PolicyStatus status;
+
+    @OneToOne
+    @JoinColumn(name = "payment_id", nullable = false)
+    private Payment payment;
+
+
+
 }

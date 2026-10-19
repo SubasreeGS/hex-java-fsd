@@ -20,10 +20,10 @@ public class RtoVehicle {
     @Column(name = "registration_no", nullable = false, unique = true, length = 20)
     private String registrationNo;
 
-    @Column(name = "make",nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String make;
 
-    @Column(name = "model",nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String model;
 
     @Column(name = "manufacture_year", nullable = false)
@@ -36,7 +36,7 @@ public class RtoVehicle {
     private String vinNo;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "fuel_type", nullable = false, length = 20)
+    @Column(name = "fuel_type", nullable = false)
     private FuelType fuelType;
 
 }

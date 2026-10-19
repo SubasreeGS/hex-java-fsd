@@ -9,17 +9,23 @@ import lombok.*;
 @Setter
 @ToString
 @Entity
-@Table(name = "inspector")
+
 public class Inspector {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 255)
+    private String name;
+
+    @Column(nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String contact;
+
     @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id",nullable = false, unique = true)
     private User user;
 
-    @Column(name = "name",nullable = false, length = 255)
-    private String name;
 }
