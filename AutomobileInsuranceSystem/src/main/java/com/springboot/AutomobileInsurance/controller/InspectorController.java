@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -16,12 +17,12 @@ import java.util.List;
 public class InspectorController {
 
     private final InspectorService inspectorService;
-
+    // Add Inspector by Officer
     @PostMapping("/api/inspector/add")
-    public void insertInspector(@Valid @RequestBody InspectorDto inspectorDto) {
-        inspectorService.insertInspector(inspectorDto);
+    public void insertInspector(@Valid @RequestBody InspectorDto inspectorDto, Principal principal) {
+        inspectorService.insertInspector(inspectorDto,principal.getName());
     }
-
+/*
     @GetMapping("/api/inspector/{id}")
     public InspectorResponseDto getById(@PathVariable long id) {
         return inspectorService.getById(id);
@@ -41,4 +42,6 @@ public class InspectorController {
     public void update(@PathVariable Long id, @RequestBody InspectorUpdateDto dto) {
         inspectorService.update(id, dto);
     }
+
+ */
 }

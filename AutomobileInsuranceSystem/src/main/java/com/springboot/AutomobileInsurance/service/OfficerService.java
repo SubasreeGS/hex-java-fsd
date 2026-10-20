@@ -10,7 +10,9 @@ import com.springboot.AutomobileInsurance.mapper.OfficerMapper;
 import com.springboot.AutomobileInsurance.model.Officer;
 import com.springboot.AutomobileInsurance.model.User;
 import com.springboot.AutomobileInsurance.repository.OfficerRepository;
+import com.springboot.AutomobileInsurance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,15 +23,17 @@ import java.util.Optional;
 public class OfficerService {
 
     private final OfficerRepository officerRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public void insertOfficer(OfficerDto dto) {
         // Step 1: Prepare user
-        User user = userService.getUserObj(
-                dto.username(),
-                dto.password(),
-                Role.OFFICER
-        );
+       User user = new User();
+       user.setUsername(dto.username());
+       user.setPassword(passwordEncoder.encode(dto.password()));
+       user.setRole(Role.OFFICER);
+        // Step 1.5: save user in db
+       userRepository.save(user);
 
         // Step 2: Map dto to obj
         Officer officer = OfficerMapper.convertDtoToEntity(dto);
@@ -40,7 +44,7 @@ public class OfficerService {
         // Step 4: Save officer
         officerRepository.save(officer);
     }
-
+/*
     public OfficerResponseDto getById(long id) {
         Officer officer = officerRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Invalid officer id"));
@@ -77,4 +81,6 @@ public class OfficerService {
 
         officerRepository.save(officer);
     }
+
+ */
 }

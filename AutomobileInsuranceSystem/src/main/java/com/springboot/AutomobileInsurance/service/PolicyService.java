@@ -15,7 +15,7 @@ import java.util.List;
 public class PolicyService {
 
     private final PolicyRepository policyRepository;
-
+/*
     public PolicyResponseDto getByPolicyNumber(String policyNumber) {
         Policy policy = policyRepository.findByPolicyNumber(policyNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Policy not found with policy number: " + policyNumber));
@@ -34,4 +34,6 @@ public class PolicyService {
                 .map(PolicyMapper::convertEntityToDto)
                 .toList();
     }
+
+ */
 }

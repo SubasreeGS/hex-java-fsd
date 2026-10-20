@@ -8,10 +8,12 @@ import java.util.Optional;
 
 @Repository
 public interface PolicyRepository extends JpaRepository<Policy, Long> {
-
+/*
     Optional<Policy> findByPolicyNumber(String policyNumber);
 
     Optional<Policy> findByProposalId(Long proposalId);
 
     Optional<Policy> findByPaymentId(Long paymentId);
+
+ */
 }

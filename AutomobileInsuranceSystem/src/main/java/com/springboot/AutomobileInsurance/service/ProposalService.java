@@ -10,16 +10,9 @@ import com.springboot.AutomobileInsurance.enums.ProposalStatus;
 import com.springboot.AutomobileInsurance.exception.InvalidCallException;
 import com.springboot.AutomobileInsurance.exception.ResourceNotFoundException;
 import com.springboot.AutomobileInsurance.mapper.ProposalMapper;
-import com.springboot.AutomobileInsurance.model.Customer;
-import com.springboot.AutomobileInsurance.model.Inspection;
-import com.springboot.AutomobileInsurance.model.Inspector;
-import com.springboot.AutomobileInsurance.model.Proposal;
-import com.springboot.AutomobileInsurance.model.RtoVehicle;
-import com.springboot.AutomobileInsurance.repository.CustomerRepository;
-import com.springboot.AutomobileInsurance.repository.InspectionRepository;
-import com.springboot.AutomobileInsurance.repository.InspectorRepository;
-import com.springboot.AutomobileInsurance.repository.ProposalRepository;
-import com.springboot.AutomobileInsurance.repository.RtoVehicleRepository;
+import com.springboot.AutomobileInsurance.model.*;
+import com.springboot.AutomobileInsurance.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProposalService {
 
     private final ProposalRepository proposalRepository;
@@ -35,73 +29,100 @@ public class ProposalService {
     private final RtoVehicleRepository rtoVehicleRepository;
     private final InspectorRepository inspectorRepository;
     private final InspectionRepository inspectionRepository;
+    private final OfficerRepository officerRepository;
 
-    public ProposalResponseDto submitProposal(ProposalSubmissionDto dto) {
-        if (dto.policyType() == PolicyType.THIRD_PARTY) {
-            if (dto.isZeroDep() || dto.isEngineProtect() || dto.isRoadsideAssist()) {
-                throw new InvalidCallException("Add-on covers cannot be selected with a Third-Party policy.");
-            }
-        }
+    public void submitProposal(ProposalSubmissionDto dto,String customerUsername) {
 
-        Customer customer = customerRepository.findById(dto.customerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + dto.customerId()));
+        //Fetch customer object
+        Customer customer = customerRepository.getByCustomerUsername(customerUsername);
 
+        //Fetch vehicle object
         RtoVehicle vehicle = rtoVehicleRepository.findByRegistrationNo(dto.registrationNo())
-                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found in RTO records: " + dto.registrationNo()));
+                .orElseThrow(() -> new ResourceNotFoundException("Registration Number not found"));
 
-        List<ProposalStatus> terminalStatuses = List.of(ProposalStatus.POLICY_ISSUED, ProposalStatus.REJECTED);
-        boolean hasActiveProposal = proposalRepository.existsByVehicleIdAndStatusNotIn(vehicle.getId(), terminalStatuses);
-        if (hasActiveProposal) {
-            throw new InvalidCallException("An active proposal already exists for vehicle: " + dto.registrationNo());
-        }
+        //convert dto to entity
+        Proposal proposal = ProposalMapper.convertDtoToEntity(dto);
 
-        Proposal proposal = ProposalMapper.convertDtoToEntity(dto, customer, vehicle);
+        //add customer to proposal
+        proposal.setCustomer(customer);
+
+        //add vehicle to proposal
+        proposal.setVehicle(vehicle);
+
+        //set status as submitted
         proposal.setStatus(ProposalStatus.PROPOSAL_SUBMITTED);
 
-        Proposal savedProposal = proposalRepository.save(proposal);
-        return ProposalMapper.convertEntityToDto(savedProposal);
+        //save proposal in db
+         proposalRepository.save(proposal);
+
     }
 
-    public void assignInspector(Long inspectorId, Long proposalId) {
+    public void assignInspector(Long inspectorId, Long proposalId,String officerUsername) {
+        //fetch officer entity
+        Officer officer = officerRepository.findByOfficerUsername(officerUsername);
+
+        //Fetch Inspector from DB using inspectorId
         Inspector inspector = inspectorRepository.findById(inspectorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inspector not found with id: " + inspectorId));
+                .orElseThrow(() -> new ResourceNotFoundException("Inspector not found"));
 
-        Proposal proposal = proposalRepository.findById(proposalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found with id: " + proposalId));
 
-        if (proposal.getStatus() != ProposalStatus.PROPOSAL_SUBMITTED && proposal.getStatus() != ProposalStatus.UNDER_REVIEW) {
-            throw new InvalidCallException("Cannot assign inspector. Proposal is in state: " + proposal.getStatus());
+        //check does this officer have authority to assign this inspector
+        if (! (inspector.getOfficer().getUser().getUsername().equals(officerUsername))) {
+            throw new InvalidCallException("Operation not allowed! contact admin");
         }
 
-        proposal.setStatus(ProposalStatus.INSPECTOR_ASSIGNED);
-        proposalRepository.save(proposal);
+        //Fetch proposal from DB using proposalId
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
 
+        //Create inspection entity
         Inspection inspection = new Inspection();
+
+        //attach proposal to inspection
         inspection.setProposal(proposal);
+
+        //assign inspector for this proposal
         inspection.setInspector(inspector);
+
+        //set status of inspection
         inspection.setStatus(InspectionStatus.SCHEDULED);
+
+        //save inspection in db
         inspectionRepository.save(inspection);
+
+        proposal.setOfficer(officer);
+        //set status of proposal as inspector assigned
+        proposal.setStatus(ProposalStatus.INSPECTOR_ASSIGNED);
+
+        //save proposal to db
+        proposalRepository.save(proposal);
     }
 
-    public void approveIdv(Long proposalId, ApproveIdvDto dto) {
-        Proposal proposal = proposalRepository.findById(proposalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found with id: " + proposalId));
+    public void approveIdv(Long proposalId, ApproveIdvDto dto,String officerUsername) {
+        //Fetch inspection record by proposal id
+        Inspection inspection = inspectionRepository.findByProposalId(proposalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inspection record not found"));
 
-        if (proposal.getStatus() != ProposalStatus.INSPECTION_COMPLETED) {
-            throw new InvalidCallException("Cannot approve IDV. Proposal status must be INSPECTION_COMPLETED, current is: " + proposal.getStatus());
+        //verify whether the officer has permission to approve this idv
+        if(! (inspection.getInspector().getOfficer().getUser().getUsername().equals(officerUsername))){
+            throw new InvalidCallException("Operation not allowed! contact admin");
         }
 
-        Inspection inspection = inspectionRepository.findByProposalId(proposalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inspection not found for proposal id: " + proposalId));
-
+        //check inspection status before approving
         if (inspection.getResult() != InspectionResult.PASSED) {
             throw new InvalidCallException("Cannot approve IDV for a failed inspection.");
         }
-
+        //approve idv
         inspection.setApprovedIdv(dto.approvedIdv());
+        //save inspection record in db
         inspectionRepository.save(inspection);
 
+        //Fetch proposal entity from inspection
+        Proposal proposal = inspection.getProposal();
+
+        //update proposal status
         proposal.setStatus(ProposalStatus.IDV_APPROVED);
+        //save proposal in db
         proposalRepository.save(proposal);
     }
 

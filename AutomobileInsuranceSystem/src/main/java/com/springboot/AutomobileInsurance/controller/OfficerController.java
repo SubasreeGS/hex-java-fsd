@@ -17,12 +17,13 @@ public class OfficerController {
 
     private final OfficerService officerService;
 
+    // Add officer by admin
     @PostMapping("/api/officer/add")
     public void insertOfficer(@Valid @RequestBody OfficerDto officerDto) {
 
         officerService.insertOfficer(officerDto);
     }
-
+/*
     @GetMapping("/api/officer/{id}")
     public OfficerResponseDto getById(@PathVariable long id) {
 
@@ -46,4 +47,6 @@ public class OfficerController {
 
         officerService.update(id, dto);
     }
+
+ */
 }

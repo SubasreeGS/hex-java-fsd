@@ -25,7 +25,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
-
+/*
     private final PaymentRepository paymentRepository;
     private final QuoteRepository quoteRepository;
     private final ProposalRepository proposalRepository;
@@ -73,7 +73,7 @@ public class PaymentService {
 
         Policy policy = new Policy();
         policy.setPolicyNumber(policyNumber);
-        policy.setProposal(proposal);
+        //policy.setProposal(proposal);
         policy.setPayment(savedPayment);
         policy.setStartDate(startDate);
         policy.setEndDate(endDate);
@@ -93,4 +93,6 @@ public class PaymentService {
         Policy policy = policyRepository.findByPaymentId(paymentId).orElse(null);
         return PaymentMapper.convertEntityToReceiptDto(payment, policy);
     }
+
+ */
 }

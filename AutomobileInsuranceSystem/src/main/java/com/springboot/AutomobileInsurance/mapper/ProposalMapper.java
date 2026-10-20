@@ -8,10 +8,9 @@ import com.springboot.AutomobileInsurance.model.RtoVehicle;
 
 public class ProposalMapper {
 
-    public static Proposal convertDtoToEntity(ProposalSubmissionDto dto, Customer customer, RtoVehicle vehicle) {
+    public static Proposal convertDtoToEntity(ProposalSubmissionDto dto) {
         Proposal proposal = new Proposal();
-        proposal.setCustomer(customer);
-        proposal.setVehicle(vehicle);
+
         proposal.setRcDocUrl(dto.rcDocUrl());
         proposal.setPolicyType(dto.policyType());
         proposal.setZeroDep(dto.isZeroDep());

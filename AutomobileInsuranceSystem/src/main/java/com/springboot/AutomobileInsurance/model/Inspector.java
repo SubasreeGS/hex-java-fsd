@@ -28,4 +28,8 @@ public class Inspector {
     @OneToOne
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "officer_id", nullable = false)
+    private Officer officer;
+
 }

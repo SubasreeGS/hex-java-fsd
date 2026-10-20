@@ -10,7 +10,9 @@ import com.springboot.AutomobileInsurance.mapper.CustomerMapper;
 import com.springboot.AutomobileInsurance.model.Customer;
 import com.springboot.AutomobileInsurance.model.User;
 import com.springboot.AutomobileInsurance.repository.CustomerRepository;
+import com.springboot.AutomobileInsurance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,15 +23,19 @@ import java.util.Optional;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
+//add new customer
     public void insertCustomer(CustomerDto dto) {
         //prepare user
-            User user = userService.getUserObj(
-                    dto.username(),
-                    dto.password(),
-                    Role.CUSTOMER
-        );
+        User user = new User();
+        user.setUsername(dto.username());
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setRole(Role.CUSTOMER);
+        //save user to user db
+        userRepository.save(user);
+
         //convert dto to entity
         Customer customer = CustomerMapper.convertDtoToEntity(dto);
         //inject user into customer
@@ -37,53 +43,56 @@ public class CustomerService {
         //save customer in db
         customerRepository.save(customer);
     }
+//get customer by customer id
+    public CustomerResponseDto getById(Long id) {
+       Customer customer = customerRepository.findById(id)
+               .orElseThrow(()-> new ResourceNotFoundException("Invalid customer id"));
 
-    public CustomerResponseDto getById(long id) {
-        Optional<Customer> optional = customerRepository.findById(id);
-        if (optional.isEmpty()) {
-            throw new ResourceNotFoundException("Invalid customer id");
-        }
-        return CustomerMapper.convertEntityToDto(optional.get());
+        return CustomerMapper.convertEntityToDto(customer);
     }
 
+    //get all customers as list of dto
     public List<CustomerResponseDto> getAll() {
         return customerRepository.findAll()
                 .stream()
                 .map(CustomerMapper::convertEntityToDto)
                 .toList();
     }
-
-    public void deleteById(long id) {
+    // delete customer
+    public void deleteById(Long id) {
         getById(id);
         customerRepository.deleteById(id);
     }
 
+    //update customer by id
     public void update(Long id, CustomerUpdateDto dto) {
+        //check customer id and get its object
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid customer id"));
 
+        //to check whether any attribute got updated
         boolean flag = false;
-
+        //update name if given
         if (dto.name() != null && !dto.name().trim().isEmpty()) {
             customer.setName(dto.name());
             flag = true;
         }
-
+        //update phone number if given
         if (dto.phoneNo() != null && !dto.phoneNo().trim().isEmpty()) {
             customer.setPhoneNo(dto.phoneNo());
             flag = true;
         }
-
+        //update address if given
         if (dto.address() != null && !dto.address().trim().isEmpty()) {
             customer.setAddress(dto.address());
             flag = true;
         }
-
+        //update dob if given
         if (dto.dob() != null) {
             customer.setDob(dto.dob());
             flag = true;
         }
-
+        //check whether update is done
         if (!flag) {
             throw new InvalidCallException("Update operation terminated");
         }

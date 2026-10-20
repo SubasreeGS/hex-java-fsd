@@ -8,9 +8,14 @@ import com.springboot.AutomobileInsurance.exception.InvalidCallException;
 import com.springboot.AutomobileInsurance.exception.ResourceNotFoundException;
 import com.springboot.AutomobileInsurance.mapper.InspectorMapper;
 import com.springboot.AutomobileInsurance.model.Inspector;
+import com.springboot.AutomobileInsurance.model.Officer;
 import com.springboot.AutomobileInsurance.model.User;
 import com.springboot.AutomobileInsurance.repository.InspectorRepository;
+import com.springboot.AutomobileInsurance.repository.OfficerRepository;
+import com.springboot.AutomobileInsurance.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,26 +26,35 @@ import java.util.Optional;
 public class InspectorService {
 
     private final InspectorRepository inspectorRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final OfficerRepository officerRepository;
 
-    public void insertInspector(InspectorDto dto) {
-        // Step 1: Prepare user obj
-        User user = userService.getUserObj(
-                dto.username(),
-                dto.password(),
-                Role.INSPECTOR
-        );
+    @Transactional
+    public void insertInspector(InspectorDto dto,String officerUsername) {
+        //fetch officer entity
+        Officer officer = officerRepository.findByOfficerUsername(officerUsername);
 
-        // Step 2: convert dto to inspector obj
+        // Prepare user obj
+       User user = new User();
+       user.setUsername(dto.username());
+       user.setPassword(passwordEncoder.encode(dto.password()));
+       user.setRole(Role.INSPECTOR);
+       //  save user in db
+       userRepository.save(user);
+
+        // convert dto to inspector obj
         Inspector inspector = InspectorMapper.convertDtoToEntity(dto);
 
-        // Step 3: inject user into inspector
+        // inject user into inspector
         inspector.setUser(user);
+        //set officer into inspector
+        inspector.setOfficer(officer);
 
-        // Step 4: add inspector into db
+        //  add inspector into db
         inspectorRepository.save(inspector);
     }
-
+/*
     public InspectorResponseDto getById(long id) {
        Inspector inspector = inspectorRepository.findById(id)
                .orElseThrow(()-> new ResourceNotFoundException("Invalid inspector id"));
@@ -77,4 +91,6 @@ public class InspectorService {
 
         inspectorRepository.save(inspector);
     }
+
+ */
 }

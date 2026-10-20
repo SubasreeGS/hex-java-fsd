@@ -7,6 +7,5 @@ import java.math.BigDecimal;
 
 public record ApproveIdvDto(
         @NotNull(message = "Approved IDV is required")
-        @DecimalMin(value = "1000.00", message = "Approved IDV must be at least 1000")
         BigDecimal approvedIdv
 ) {}

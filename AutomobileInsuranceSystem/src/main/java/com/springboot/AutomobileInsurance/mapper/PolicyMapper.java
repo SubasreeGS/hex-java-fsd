@@ -4,7 +4,7 @@ import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto;
 import com.springboot.AutomobileInsurance.model.Policy;
 
 public class PolicyMapper {
-
+/*
     public static PolicyResponseDto convertEntityToDto(Policy policy) {
         return new PolicyResponseDto(
                 policy.getId(),
@@ -21,4 +21,6 @@ public class PolicyMapper {
                 policy.getPolicyPdfUrl()
         );
     }
+
+ */
 }

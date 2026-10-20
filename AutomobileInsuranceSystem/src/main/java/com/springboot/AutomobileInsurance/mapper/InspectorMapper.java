@@ -9,9 +9,11 @@ public class InspectorMapper {
     public static Inspector convertDtoToEntity(InspectorDto dto) {
         Inspector inspector = new Inspector();
         inspector.setName(dto.name());
+        inspector.setEmail(dto.email());
+        inspector.setContact(dto.contact());
         return inspector;
     }
-
+/*
     public static InspectorResponseDto convertEntityToDto(Inspector inspector) {
         return new InspectorResponseDto(
                 inspector.getId(),
@@ -20,4 +22,6 @@ public class InspectorMapper {
                 inspector.getUser().getUsername()
         );
     }
+
+ */
 }

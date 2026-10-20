@@ -12,7 +12,7 @@ import java.util.List;
 public class PolicyController {
 
     private final PolicyService policyService;
-
+/*
     @GetMapping("/api/policy/number/{policyNumber}")
     public PolicyResponseDto getByPolicyNumber(@PathVariable String policyNumber) {
         return policyService.getByPolicyNumber(policyNumber);
@@ -27,4 +27,6 @@ public class PolicyController {
     public List<PolicyResponseDto> getAll() {
         return policyService.getAll();
     }
+
+ */
 }

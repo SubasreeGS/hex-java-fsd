@@ -16,5 +16,7 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
 
     List<Proposal> findByStatus(ProposalStatus status);
 
-    boolean existsByVehicleIdAndStatusNotIn(Long vehicleId, List<ProposalStatus> statuses);
+    //boolean existsByVehicleIdAndStatusNotIn(Long vehicleId, List<ProposalStatus> statuses);
+
+
 }

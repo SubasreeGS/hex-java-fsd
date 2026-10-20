@@ -8,8 +8,6 @@ public record CustomerResponseDto(
         String phoneNo,
         String address,
         LocalDate dob,
-        String aadhaarNo,
-        String panNo,
         Long userId,
         String username
 ) {}
