@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record SubmitInspectionReportDto(
-        @NotNull(message = "Inspection result (PASSED/FAILED) is required")
+        @NotNull(message = "Inspection result is required")
         InspectionResult result,
 
         BigDecimal recommendedIdv,

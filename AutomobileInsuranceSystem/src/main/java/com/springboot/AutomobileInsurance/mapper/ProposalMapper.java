@@ -1,6 +1,7 @@
 package com.springboot.AutomobileInsurance.mapper;
 
 import com.springboot.AutomobileInsurance.dto.request.ProposalSubmissionDto;
+import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDto;
 import com.springboot.AutomobileInsurance.dto.response.ProposalResponseDto;
 import com.springboot.AutomobileInsurance.model.Customer;
 import com.springboot.AutomobileInsurance.model.Proposal;
@@ -39,4 +40,6 @@ public class ProposalMapper {
                 proposal.getStatus()
         );
     }
+
+
 }

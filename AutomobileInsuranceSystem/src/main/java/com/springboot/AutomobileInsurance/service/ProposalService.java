@@ -2,6 +2,9 @@ package com.springboot.AutomobileInsurance.service;
 
 import com.springboot.AutomobileInsurance.dto.request.ApproveIdvDto;
 import com.springboot.AutomobileInsurance.dto.request.ProposalSubmissionDto;
+import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDto;
+import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDtoV2;
+import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDtoV3;
 import com.springboot.AutomobileInsurance.dto.response.ProposalResponseDto;
 import com.springboot.AutomobileInsurance.enums.InspectionResult;
 import com.springboot.AutomobileInsurance.enums.InspectionStatus;
@@ -14,6 +17,8 @@ import com.springboot.AutomobileInsurance.model.*;
 import com.springboot.AutomobileInsurance.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -90,6 +95,7 @@ public class ProposalService {
         //save inspection in db
         inspectionRepository.save(inspection);
 
+        //assign officer for proposal
         proposal.setOfficer(officer);
         //set status of proposal as inspector assigned
         proposal.setStatus(ProposalStatus.INSPECTOR_ASSIGNED);
@@ -126,12 +132,54 @@ public class ProposalService {
         proposalRepository.save(proposal);
     }
 
-    public ProposalResponseDto getById(long id) {
-        Optional<Proposal> optional = proposalRepository.findById(id);
-        if (optional.isEmpty()) {
-            throw new ResourceNotFoundException("Invalid proposal id: " + id);
-        }
-        return ProposalMapper.convertEntityToDto(optional.get());
+    //get proposal by customer id (V1)
+    public List<ProposalInfoDto> getProposalByCustomerId(Long customerId,int page,int size) {
+        // Validate customerId
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer Id Invalid"));
+
+        Pageable pageable = PageRequest.of(page,size);
+        return proposalRepository.getProposalByCustomerId(customerId,pageable);
+    }
+
+    //get proposal by customer username (v2)
+    public List<ProposalInfoDto> getByCustomerUsername(int page,int size,String customerUsername)
+    {
+        Pageable pageable = PageRequest.of(page,size);
+        return proposalRepository.getByCustomerUsername(customerUsername,pageable);
+    }
+
+    //get proposal by Inspector username
+    public List<ProposalInfoDtoV2> getByInspectorUsername(int page, int size, String inspectorUsername) {
+        Pageable pageable = PageRequest.of(page,size);
+        return  proposalRepository.getByInspectorUsername(inspectorUsername,pageable);
+    }
+
+    //get proposal by Officer username
+    public List<ProposalInfoDtoV3> getByOfficerUsername(int page, int size, String officerUsername) {
+        Pageable pageable = PageRequest.of(page,size);
+        return proposalRepository.getByOfficerUsername(officerUsername,pageable);
+    }
+
+    //get all proposal by status
+    public List<ProposalInfoDtoV3> getByProposalStatus(ProposalStatus status,int page,int size,String officerUsername) {
+        Pageable pageable = PageRequest.of(page,size);
+        return proposalRepository.getByProposalStatus(status,officerUsername,pageable);
+    }
+
+
+
+
+
+
+
+
+
+    public ProposalResponseDto getById(Long id) {
+        Proposal proposal = proposalRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Proposal not found"));
+
+        return ProposalMapper.convertEntityToDto(proposal);
     }
 
     public List<ProposalResponseDto> getAll() {
@@ -141,19 +189,10 @@ public class ProposalService {
                 .toList();
     }
 
-    public List<ProposalResponseDto> getByCustomerId(long customerId) {
-        return proposalRepository.findByCustomerId(customerId)
-                .stream()
-                .map(ProposalMapper::convertEntityToDto)
-                .toList();
-    }
 
-    public List<ProposalResponseDto> getByStatus(ProposalStatus status) {
-        return proposalRepository.findByStatus(status)
-                .stream()
-                .map(ProposalMapper::convertEntityToDto)
-                .toList();
-    }
+
+
+
 
     public List<ProposalResponseDto> getByOfficerId(long officerId) {
         // Step 1: Query all proposals assigned to the specific officer
@@ -162,4 +201,7 @@ public class ProposalService {
                 .map(ProposalMapper::convertEntityToDto)
                 .toList();
     }
+
+
+
 }

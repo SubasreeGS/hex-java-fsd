@@ -42,6 +42,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/api/proposal/submit").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.PUT,"/api/proposal/assign/{inspectorId}/{proposalId}").hasAuthority("OFFICER")
                         .requestMatchers(HttpMethod.PUT,"/api/proposal/approve-idv/{proposalId}").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET,"/api/proposal/customer/v1/{customerId}").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET,"/api/proposal/customer/v2").hasAuthority("CUSTOMER")
+                        .requestMatchers(HttpMethod.GET,"/api/proposal/inspector").hasAuthority("INSPECTOR")
+                        .requestMatchers(HttpMethod.GET,"/api/proposal/officer").hasAuthority("OFFICER")
+
 
 
 
