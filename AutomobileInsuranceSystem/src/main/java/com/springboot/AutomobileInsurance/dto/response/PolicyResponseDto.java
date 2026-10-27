@@ -8,7 +8,6 @@ import java.time.LocalDate;
 public record PolicyResponseDto(
         Long policyId,
         String policyNumber,
-        Long proposalId,
         String customerName,
         String registrationNo,
         String vehicleMake,

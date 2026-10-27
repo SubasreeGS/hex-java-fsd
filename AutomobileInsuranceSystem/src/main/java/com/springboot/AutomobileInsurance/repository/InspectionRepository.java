@@ -17,6 +17,7 @@ public interface InspectionRepository extends JpaRepository<Inspection, Long> {
 
     Optional<Inspection> findByProposalId(Long proposalId);
 
+
     List<Inspection> findByInspectorId(Long inspectorId);
 
     List<Inspection> findByStatus(InspectionStatus status);

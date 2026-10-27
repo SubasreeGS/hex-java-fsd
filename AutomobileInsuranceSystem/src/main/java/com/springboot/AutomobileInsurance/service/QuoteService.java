@@ -15,6 +15,7 @@ import com.springboot.AutomobileInsurance.repository.ProposalRepository;
 import com.springboot.AutomobileInsurance.repository.QuoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -28,99 +29,104 @@ public class QuoteService {
     private final ProposalRepository proposalRepository;
     private final InspectionRepository inspectionRepository;
 
-    private static final BigDecimal FIXED_TP_RATE = new BigDecimal("3500.00");
-    private static final BigDecimal OD_RATE = new BigDecimal("0.03");          // 3% of IDV
-    private static final BigDecimal ZERO_DEP_RATE = new BigDecimal("0.015");   // 1.5% of IDV
-    private static final BigDecimal ENGINE_PROTECT_RATE = new BigDecimal("0.008"); // 0.8% of IDV
-    private static final BigDecimal ROADSIDE_ASSIST_FLAT = new BigDecimal("500.00");
-    private static final BigDecimal GST_RATE = new BigDecimal("0.18");        // 18% GST
+    // Standard insurance premium rates
+    private final BigDecimal fixedTpRate = BigDecimal.valueOf(3500);
+    private final BigDecimal odRate = BigDecimal.valueOf(0.03);
+    private final BigDecimal zeroDepRate = BigDecimal.valueOf(0.015);
+    private final BigDecimal engineProtectRate = BigDecimal.valueOf(0.008);
+    private final BigDecimal roadsideAssistFlat = BigDecimal.valueOf(500);
+    private final BigDecimal gstRate = BigDecimal.valueOf(0.18);
 
-    public void generateQuote(Long proposalId) {
-        if (quoteRepository.existsByProposalId(proposalId)) {
-            throw new InvalidCallException("Quote already generated for proposal id: " + proposalId);
-        }
-
+    @Transactional
+    public void generateQuote(Long proposalId)
+    {
+        // Fetch Proposal object from DB using proposal id
         Proposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal not found with id: " + proposalId));
 
-        BigDecimal tpPremium = FIXED_TP_RATE;
+        // Set default starting values for all premiums
+        BigDecimal tpPremium = fixedTpRate;
         BigDecimal odPremium = BigDecimal.ZERO;
         BigDecimal zeroDepPremium = BigDecimal.ZERO;
         BigDecimal engineProtectPremium = BigDecimal.ZERO;
         BigDecimal roadsideAssistPremium = BigDecimal.ZERO;
         BigDecimal idv = BigDecimal.ZERO;
 
-        if (proposal.getPolicyType() == PolicyType.THIRD_PARTY) {
+
+        // Calculate premiums based on policy type
+        if (proposal.getPolicyType() == PolicyType.THIRD_PARTY)
+        {
+            // Third party policy covers only third party damages, so own damage is zero
             odPremium = BigDecimal.ZERO;
-        } else {
-            if (proposal.getStatus() != ProposalStatus.IDV_APPROVED) {
-                throw new InvalidCallException("Quote cannot be generated until the officer approves the IDV. Current proposal status: " + proposal.getStatus());
-            }
+        }
 
+        else // For comprehensive policy,
+        {
+
+            // fetch inspection details to get approved IDV
             Inspection inspection = inspectionRepository.findByProposalId(proposalId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Inspection record missing for proposal id: " + proposalId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Inspection record not found"));
 
-            if (inspection.getResult() != InspectionResult.PASSED) {
-                throw new InvalidCallException("Cannot generate quote: vehicle inspection did not pass.");
-            }
 
             idv = inspection.getApprovedIdv();
-            if (idv == null || idv.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new InvalidCallException("Approved IDV must be positive to generate comprehensive quote.");
-            }
 
-            odPremium = idv.multiply(OD_RATE).setScale(2, RoundingMode.HALF_UP);
+            // Calculate own damage premium based on approved vehicle value
+            odPremium = idv.multiply(odRate);
 
+            // Add extra charges if the customer choose addons
             if (proposal.isZeroDep()) {
-                zeroDepPremium = idv.multiply(ZERO_DEP_RATE).setScale(2, RoundingMode.HALF_UP);
+                zeroDepPremium = idv.multiply(zeroDepRate);
             }
             if (proposal.isEngineProtect()) {
-                engineProtectPremium = idv.multiply(ENGINE_PROTECT_RATE).setScale(2, RoundingMode.HALF_UP);
+                engineProtectPremium = idv.multiply(engineProtectRate);
             }
             if (proposal.isRoadsideAssist()) {
-                roadsideAssistPremium = ROADSIDE_ASSIST_FLAT.setScale(2, RoundingMode.HALF_UP);
+                roadsideAssistPremium = roadsideAssistFlat;
             }
         }
 
+        // Sum all individual covers to get net premium before taxes
         BigDecimal netPremium = tpPremium
                 .add(odPremium)
                 .add(zeroDepPremium)
                 .add(engineProtectPremium)
                 .add(roadsideAssistPremium);
 
-        BigDecimal taxAmount = netPremium.multiply(GST_RATE).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal totalPremium = netPremium.add(taxAmount).setScale(2, RoundingMode.HALF_UP);
+        // Calculate GST (18%) and final total amount
+        BigDecimal taxAmount = netPremium.multiply(gstRate);
+        BigDecimal totalPremium = netPremium.add(taxAmount);
 
+        // Build the Quote entity and format all values to 2 decimal places
         Quote quote = new Quote();
         quote.setProposal(proposal);
-        quote.setTpPremium(tpPremium);
-        quote.setOdPremium(odPremium);
-        quote.setZeroDepPremium(zeroDepPremium);
-        quote.setEngineProtectPremium(engineProtectPremium);
-        quote.setRoadsideAssistPremium(roadsideAssistPremium);
-        quote.setNetPremium(netPremium);
-        quote.setTaxAmount(taxAmount);
-        quote.setTotalPremium(totalPremium);
+        quote.setTpPremium(round(tpPremium));
+        quote.setOdPremium(round(odPremium));
+        quote.setZeroDepPremium(round(zeroDepPremium));
+        quote.setEngineProtectPremium(round(engineProtectPremium));
+        quote.setRoadsideAssistPremium(round(roadsideAssistPremium));
+        quote.setNetPremium(round(netPremium));
+        quote.setTaxAmount(round(taxAmount));
+        quote.setTotalPremium(round(totalPremium));
+
+        // Quote expires in 15 days
         quote.setValidUntil(LocalDate.now().plusDays(15));
 
+        // Update proposal status and save both records to db
         proposal.setStatus(ProposalStatus.QUOTE_GENERATED);
         proposalRepository.save(proposal);
 
-       quoteRepository.save(quote);
-
+        quoteRepository.save(quote);
     }
 
+    @Transactional
     public QuoteResponseDto getByProposalId(Long proposalId) {
-        Quote quote = quoteRepository.findByProposalId(proposalId)
-                .orElseThrow(() -> new ResourceNotFoundException("Quote not found for proposal id: " + proposalId));
+        Proposal proposal=proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
 
-        BigDecimal idv = BigDecimal.ZERO;
-        if (quote.getProposal().getPolicyType() == PolicyType.COMPREHENSIVE) {
-            idv = inspectionRepository.findByProposalId(proposalId)
-                    .map(Inspection::getApprovedIdv)
-                    .orElse(BigDecimal.ZERO);
-        }
+        return quoteRepository.getByProposalId(proposalId);
+    }
 
-        return QuoteMapper.convertEntityToDto(quote, idv);
+    private BigDecimal round(BigDecimal value) {
+        return value.setScale(2, RoundingMode.HALF_UP);
     }
 }

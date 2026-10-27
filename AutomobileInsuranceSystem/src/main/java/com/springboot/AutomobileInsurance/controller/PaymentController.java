@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
-/*
+
     @PostMapping("/api/payment/process/{quoteId}")
     public void processPayment(@PathVariable Long quoteId,
                                             @Valid @RequestBody ProcessPaymentDto dto) {
@@ -24,5 +24,5 @@ public class PaymentController {
         return paymentService.getReceiptByPaymentId(paymentId);
     }
 
- */
+
 }

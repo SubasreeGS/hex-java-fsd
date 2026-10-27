@@ -12,21 +12,30 @@ import java.util.List;
 public class PolicyController {
 
     private final PolicyService policyService;
-/*
-    @GetMapping("/api/policy/number/{policyNumber}")
+
+    //get policy by policy number
+    @GetMapping("/api/policy/number/v1/{policyNumber}")
     public PolicyResponseDto getByPolicyNumber(@PathVariable String policyNumber) {
         return policyService.getByPolicyNumber(policyNumber);
     }
 
-    @GetMapping("/api/policy/proposal/{proposalId}")
+    //get by quote id
+    @GetMapping("/api/policy/quote/v2/{quoteId}")
+    public PolicyResponseDto getByQuoteId(@PathVariable Long quoteId) {
+        return policyService.getByQuoteId(quoteId);
+    }
+
+    //get by proposal id
+    @GetMapping("/api/policy/proposal/v3/{proposalId}")
     public PolicyResponseDto getByProposalId(@PathVariable Long proposalId) {
         return policyService.getByProposalId(proposalId);
     }
 
-    @GetMapping("/api/policy/all")
+    //get all policies
+    @GetMapping("/api/policy/v4/all")
     public List<PolicyResponseDto> getAll() {
         return policyService.getAll();
     }
 
- */
+
 }

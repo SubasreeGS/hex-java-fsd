@@ -25,39 +25,25 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
-/*
+
     private final PaymentRepository paymentRepository;
     private final QuoteRepository quoteRepository;
     private final ProposalRepository proposalRepository;
     private final PolicyRepository policyRepository;
 
     public void processPayment(Long quoteId, ProcessPaymentDto dto) {
-        // Step 1: Prevent duplicate payment attempts on the same quote
-        if (paymentRepository.existsByQuoteId(quoteId)) {
-            throw new InvalidCallException("Payment already processed for quote id: " + quoteId);
-        }
-
-        // Step 2: Fetch and validate quote
+        // Fetch and validate quote
         Quote quote = quoteRepository.findById(quoteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Quote not found with id: " + quoteId));
+                .orElseThrow(() -> new ResourceNotFoundException("Quote not found"));
 
-        if (LocalDate.now().isAfter(quote.getValidUntil())) {
-            throw new InvalidCallException("Quote has expired on: " + quote.getValidUntil() + ". Request a new quote.");
-        }
-
-        // Step 3: Validate exact amount paid matches quote total
+        // Validate exact amount paid matches quote total
         if (dto.amount().compareTo(quote.getTotalPremium()) != 0) {
-            throw new InvalidCallException("Payment amount (" + dto.amount() + ") does not match quote total (" + quote.getTotalPremium() + ")");
-        }
-
-        // Step 4: Validate unique transaction reference
-        if (paymentRepository.findByTransactionRef(dto.transactionRef()).isPresent()) {
-            throw new InvalidCallException("Duplicate transaction reference: " + dto.transactionRef());
+            throw new InvalidCallException("Payment amount does not match quote total");
         }
 
         Proposal proposal = quote.getProposal();
 
-        // Step 5: Save Payment entity
+        // Save Payment entity
         Payment payment = new Payment();
         payment.setQuote(quote);
         payment.setTransactionRef(dto.transactionRef());
@@ -66,14 +52,13 @@ public class PaymentService {
         payment.setStatus(PaymentStatus.SUCCESS);
         Payment savedPayment = paymentRepository.save(payment);
 
-        // Step 6: Automatically issue Policy upon successful payment
+        // Automatically issue Policy upon successful payment
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plusYears(1).minusDays(1);
-        String policyNumber = "POL-" + LocalDate.now().getYear() + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String policyNumber = "POL-" + java.time.Year.now() + "-" + (int)(Math.random() * 900000 + 100000);
 
         Policy policy = new Policy();
         policy.setPolicyNumber(policyNumber);
-        //policy.setProposal(proposal);
         policy.setPayment(savedPayment);
         policy.setStartDate(startDate);
         policy.setEndDate(endDate);
@@ -81,7 +66,7 @@ public class PaymentService {
         policy.setPolicyPdfUrl("https://storage.automobile-insurance.com/policies/" + policyNumber + ".pdf");
         Policy savedPolicy = policyRepository.save(policy);
 
-        // Step 7: Update Proposal status to POLICY_ISSUED
+        // Update Proposal status to POLICY_ISSUED
         proposal.setStatus(ProposalStatus.POLICY_ISSUED);
         proposalRepository.save(proposal);
 
@@ -89,10 +74,12 @@ public class PaymentService {
 
     public PaymentReceiptDto getReceiptByPaymentId(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Payment record not found with id: " + paymentId));
-        Policy policy = policyRepository.findByPaymentId(paymentId).orElse(null);
-        return PaymentMapper.convertEntityToReceiptDto(payment, policy);
+                .orElseThrow(() -> new ResourceNotFoundException("Payment record not found"));
+
+        return paymentRepository.getReceiptByPaymentId(paymentId);
     }
 
- */
+
+
+
 }
