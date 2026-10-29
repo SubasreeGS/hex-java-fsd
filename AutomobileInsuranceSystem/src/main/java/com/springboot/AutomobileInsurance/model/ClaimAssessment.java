@@ -19,26 +19,23 @@ public class ClaimAssessment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "claim_id",referencedColumnName = "id", nullable = false, unique = true)
-    private Claim claim;
-
-    @ManyToOne
-    @JoinColumn(name = "inspector_id",referencedColumnName = "id", nullable = false)
-    private Inspector inspector;
-
     @Column(name = "estimated_cost", precision = 10, scale = 2)
     private BigDecimal estimatedCost;
 
     @Column(name = "damage_photos_url", length = 500)
     private String damagePhotosUrl;
 
-    @Column(name = "assessment_notes", columnDefinition = "TEXT")
+    @Column(name = "assessment_notes")
     private String assessmentNotes;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 30)
     private AssessmentStatus status;
 
+    @OneToOne
+    private Claim claim;
+
+    @ManyToOne
+    @JoinColumn(name = "inspector_id")
+    private Inspector inspector;
 
 }

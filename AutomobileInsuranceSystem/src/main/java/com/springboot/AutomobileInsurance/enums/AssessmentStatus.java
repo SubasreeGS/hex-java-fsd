@@ -1,7 +1,8 @@
 package com.springboot.AutomobileInsurance.enums;
 
 public enum AssessmentStatus {
-    ASSIGNED,
+    PENDING,
     IN_PROGRESS,
-    COMPLETED
+    COMPLETED,
+    REJECTED
 }

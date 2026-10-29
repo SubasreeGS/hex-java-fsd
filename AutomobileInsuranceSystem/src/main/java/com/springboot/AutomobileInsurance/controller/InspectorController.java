@@ -2,6 +2,7 @@ package com.springboot.AutomobileInsurance.controller;
 
 import com.springboot.AutomobileInsurance.dto.request.InspectorDto;
 import com.springboot.AutomobileInsurance.dto.request.InspectorUpdateDto;
+import com.springboot.AutomobileInsurance.dto.response.InspectorDropdownDto;
 import com.springboot.AutomobileInsurance.dto.response.InspectorResponseDto;
 import com.springboot.AutomobileInsurance.service.InspectorService;
 import jakarta.validation.Valid;
@@ -22,6 +23,13 @@ public class InspectorController {
     public void insertInspector(@Valid @RequestBody InspectorDto inspectorDto, Principal principal) {
         inspectorService.insertInspector(inspectorDto,principal.getName());
     }
+
+
+    @GetMapping("/api/inspector/all")
+    public List<InspectorDropdownDto> getAllInspectors() {
+        return inspectorService.getAllInspectorsForDropdown();
+    }
+
 /*
     @GetMapping("/api/inspector/{id}")
     public InspectorResponseDto getById(@PathVariable long id) {

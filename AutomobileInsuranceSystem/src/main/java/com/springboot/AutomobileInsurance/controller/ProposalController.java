@@ -63,7 +63,7 @@ public class ProposalController {
     }
 
     //get proposal by inspector username (v3)
-    @GetMapping("/api/proposal/inspector/v3")
+    @GetMapping("/api/proposal/inspector")
     public List<ProposalInfoDtoV2> getByInspectorUsername(@RequestParam(name = "page",required = false,defaultValue = "0") int page,
                                                           @RequestParam(name ="size",required = false,defaultValue = "6")int size,
                                                           Principal principal)
@@ -72,7 +72,7 @@ public class ProposalController {
     }
 
     //get proposal by Officer username (v4)
-    @GetMapping("/api/proposal/officer/v4")
+    @GetMapping("/api/proposal/officer")
     public List<ProposalInfoDtoV3> getByOfficerUsername(@RequestParam(name = "page",required = false,defaultValue = "0") int page,
                                                         @RequestParam(name ="size",required = false,defaultValue = "6")int size,
                                                         Principal principal)
@@ -82,7 +82,7 @@ public class ProposalController {
 
 
     //get proposal by status (v5)
-    @GetMapping("/api/proposal/status/v5/{status}")
+    @GetMapping("/api/proposal/status/{status}")
     public List<ProposalInfoDtoV3> getByProposalStatus(@PathVariable ProposalStatus status,
                                                        @RequestParam(name = "page",required = false,defaultValue = "0") int page,
                                                        @RequestParam(name ="size",required = false,defaultValue = "10")int size,

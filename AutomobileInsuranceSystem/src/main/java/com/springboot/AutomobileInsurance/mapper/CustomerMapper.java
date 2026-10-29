@@ -27,7 +27,6 @@ public class CustomerMapper {
                 customer.getPhoneNo(),
                 customer.getAddress(),
                 customer.getDob(),
-                customer.getUser().getId(),
                 customer.getUser().getUsername()
         );
     }

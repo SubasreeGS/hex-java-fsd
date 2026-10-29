@@ -11,11 +11,13 @@ public class QuoteController {
 
     private final QuoteService quoteService;
 
+    //officer generated
     @PostMapping("/api/quote/generate/{proposalId}")
     public void generateQuote(@PathVariable Long proposalId) {
          quoteService.generateQuote(proposalId);
     }
 
+    //get quote by the proposal id
     @GetMapping("/api/quote/proposal/{proposalId}")
     public QuoteResponseDto getByProposalId(@PathVariable Long proposalId) {
         return quoteService.getByProposalId(proposalId);

@@ -17,4 +17,6 @@ join c.user u
 where u.username=?1
 """)
     Customer getByCustomerUsername(String customerUsername);
+
+
 }

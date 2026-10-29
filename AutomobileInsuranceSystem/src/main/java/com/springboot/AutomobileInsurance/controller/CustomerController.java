@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -24,11 +25,20 @@ public class CustomerController {
     }
 
     //get customer by customer id
-    @GetMapping("/api/customer/{id}")
+    @GetMapping("/api/customer/v1/{id}")
     public CustomerResponseDto getById(@PathVariable Long id) {
 
         return customerService.getById(id);
     }
+
+    //get customer details my its username
+    @GetMapping("/api/customer/profile/v2")
+    public CustomerResponseDto getByCustomerUsername(Principal principal) {
+
+        return customerService.getByCustomerUsername(principal.getName());
+    }
+
+
 
     //get all customers as list of dto
     @GetMapping("/api/customer/all")
@@ -45,8 +55,15 @@ public class CustomerController {
     }
 
     //update customer by id
-    @PutMapping("/api/customer/{id}")
+    @PutMapping("/api/customer/v1/{id}")
     public void update(@PathVariable Long id, @RequestBody CustomerUpdateDto dto) {
         customerService.update(id, dto);
     }
+
+    // Update logged-in customer's profile
+    @PutMapping("/api/customer/profile/v2")
+    public void updateMyProfile(@Valid @RequestBody CustomerUpdateDto dto, Principal principal) {
+        customerService.updateByUsername(principal.getName(), dto);
+    }
+
 }

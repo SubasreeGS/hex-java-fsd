@@ -1,6 +1,7 @@
 package com.springboot.AutomobileInsurance.repository;
 
 import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto;
+import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDtoV2;
 import com.springboot.AutomobileInsurance.model.Policy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -110,5 +111,26 @@ SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
     Optional<Policy> findByPaymentId(Long paymentId);
 
 
-
+    @Query("""
+SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDtoV2(
+        pol.policyNumber,
+        c.name,
+        prop.registrationNo,
+        prop.vehicleMake,
+        prop.vehicleModel,
+        prop.policyType,
+        pol.startDate,
+        pol.endDate,
+        pol.totalPremium,
+        pol.policyPdfUrl
+    )
+    FROM Policy pol
+    JOIN pol.payment pay
+    JOIN pay.quote q
+    JOIN q.proposal prop
+    JOIN prop.customer c
+    JOIN c.user u
+    WHERE u.username = ?1
+""")
+    List<PolicyResponseDtoV2> findCustomerPolicyByUsername(String name);
 }

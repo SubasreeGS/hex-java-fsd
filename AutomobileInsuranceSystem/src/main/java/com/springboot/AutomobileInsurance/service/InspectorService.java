@@ -2,6 +2,7 @@ package com.springboot.AutomobileInsurance.service;
 
 import com.springboot.AutomobileInsurance.dto.request.InspectorDto;
 import com.springboot.AutomobileInsurance.dto.request.InspectorUpdateDto;
+import com.springboot.AutomobileInsurance.dto.response.InspectorDropdownDto;
 import com.springboot.AutomobileInsurance.dto.response.InspectorResponseDto;
 import com.springboot.AutomobileInsurance.enums.Role;
 import com.springboot.AutomobileInsurance.exception.InvalidCallException;
@@ -53,6 +54,10 @@ public class InspectorService {
 
         //  add inspector into db
         inspectorRepository.save(inspector);
+    }
+
+    public List<InspectorDropdownDto> getAllInspectorsForDropdown() {
+        return inspectorRepository.findAllForDropdown();
     }
 /*
     public InspectorResponseDto getById(long id) {

@@ -1,8 +1,8 @@
 package com.springboot.AutomobileInsurance.service;
 
 import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto;
+import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDtoV2;
 import com.springboot.AutomobileInsurance.exception.ResourceNotFoundException;
-import com.springboot.AutomobileInsurance.mapper.PolicyMapper;
 import com.springboot.AutomobileInsurance.model.Policy;
 import com.springboot.AutomobileInsurance.model.Proposal;
 import com.springboot.AutomobileInsurance.model.Quote;
@@ -51,5 +51,7 @@ public class PolicyService {
     }
 
 
-
+    public List<PolicyResponseDtoV2> getMyPolicyCards(String name) {
+        return policyRepository.findCustomerPolicyByUsername(name);
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.lang.ScopedValue;
 import java.util.Optional;
 
 @Repository
@@ -17,6 +18,7 @@ join o.user u
 where u.username=?1
 """)
     Officer findByOfficerUsername(String officerUsername);
+
 
 
 }

@@ -11,6 +11,7 @@ import com.springboot.AutomobileInsurance.model.Customer;
 import com.springboot.AutomobileInsurance.model.User;
 import com.springboot.AutomobileInsurance.repository.CustomerRepository;
 import com.springboot.AutomobileInsurance.repository.UserRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,12 @@ public class CustomerService {
         return CustomerMapper.convertEntityToDto(customer);
     }
 
+    public CustomerResponseDto getByCustomerUsername(String name) {
+       Customer customer = customerRepository.getByCustomerUsername(name);
+       return CustomerMapper.convertEntityToDto(customer);
+
+    }
+
     //get all customers as list of dto
     public List<CustomerResponseDto> getAll() {
         return customerRepository.findAll()
@@ -69,6 +76,41 @@ public class CustomerService {
         //check customer id and get its object
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Invalid customer id"));
+
+        //to check whether any attribute got updated
+        boolean flag = false;
+        //update name if given
+        if (dto.name() != null && !dto.name().trim().isEmpty()) {
+            customer.setName(dto.name());
+            flag = true;
+        }
+        //update phone number if given
+        if (dto.phoneNo() != null && !dto.phoneNo().trim().isEmpty()) {
+            customer.setPhoneNo(dto.phoneNo());
+            flag = true;
+        }
+        //update address if given
+        if (dto.address() != null && !dto.address().trim().isEmpty()) {
+            customer.setAddress(dto.address());
+            flag = true;
+        }
+        //update dob if given
+        if (dto.dob() != null) {
+            customer.setDob(dto.dob());
+            flag = true;
+        }
+        //check whether update is done
+        if (!flag) {
+            throw new InvalidCallException("Update operation terminated");
+        }
+
+        customerRepository.save(customer);
+    }
+
+    // Update logged-in customer's profile
+    public void updateByUsername(String username, CustomerUpdateDto dto) {
+
+        Customer customer = customerRepository.getByCustomerUsername(username);
 
         //to check whether any attribute got updated
         boolean flag = false;

@@ -55,7 +55,7 @@ public class PaymentService {
         // Automatically issue Policy upon successful payment
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = startDate.plusYears(1).minusDays(1);
-        String policyNumber = "POL-" + java.time.Year.now() + "-" + (int)(Math.random() * 900000 + 100000);
+        String policyNumber = "POL-" + java.time.Year.now() + "-" + (int)((Math.random()*10000));
 
         Policy policy = new Policy();
         policy.setPolicyNumber(policyNumber);
