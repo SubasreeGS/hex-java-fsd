@@ -14,17 +14,26 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final MyUserDetailsService myUserDetailsService ;
+    private final JwtFilter jwtFilter;
+
 
     @Bean
     public SecurityFilterChain defaultFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+
+                        //customer
+                        .requestMatchers(HttpMethod.POST,"/api/customer/add").permitAll()
+
+                        // login API
+                        .requestMatchers(HttpMethod.GET,"/api/auth/login").authenticated()
 
                         //admin
                         .requestMatchers(HttpMethod.POST,"/api/admin/add").permitAll()
@@ -37,7 +46,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/inspector/all").hasAuthority("OFFICER")
 
                         //customer
-                        .requestMatchers(HttpMethod.POST,"/api/customer/add").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/customer/v1/{id}").hasAnyAuthority("CUSTOMER","OFFICER")
                         .requestMatchers(HttpMethod.GET,"/api/customer/profile/v2").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.GET,"/api/customer/all").hasAuthority("OFFICER")
@@ -101,6 +109,10 @@ public class SecurityConfig {
 
                         .anyRequest().permitAll()
                 );
+
+        // Add jwt filter before Spring's Auth Filter
+        http.addFilterBefore(jwtFilter , UsernamePasswordAuthenticationFilter.class);
+
         http.httpBasic(Customizer.withDefaults());
         return http.build();
     }

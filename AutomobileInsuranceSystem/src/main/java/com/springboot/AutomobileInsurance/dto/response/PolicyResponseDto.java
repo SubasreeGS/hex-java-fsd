@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record PolicyResponseDto(
-        Long policyId,
+        Long id,
         String policyNumber,
         String customerName,
         String registrationNo,

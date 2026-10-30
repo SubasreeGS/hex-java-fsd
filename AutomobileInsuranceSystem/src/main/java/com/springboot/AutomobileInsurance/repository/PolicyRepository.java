@@ -16,13 +16,13 @@ public interface PolicyRepository extends JpaRepository<Policy, Long> {
 
 
     @Query("""
-SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
+        SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
             pol.id,
             pol.policyNumber,
-            prop.customerName,
-            prop.registrationNo,
-            prop.vehicleMake,
-            prop.vehicleModel,
+            cust.name,
+            v.registrationNo,
+            v.make,
+            v.model,
             prop.policyType,
             pol.totalPremium,
             pol.startDate,
@@ -33,19 +33,21 @@ SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
         JOIN pol.payment pay
         JOIN pay.quote q
         JOIN q.proposal prop
+        JOIN prop.customer cust
+        JOIN prop.vehicle v
         WHERE pol.policyNumber = ?1
-""")
+    """)
     PolicyResponseDto getByPolicyNumber(String policyNumber);
 
 
-@Query("""
-SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
+    @Query("""
+        SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
             pol.id,
             pol.policyNumber,
-            prop.customerName,
-            prop.registrationNo,
-            prop.vehicleMake,
-            prop.vehicleModel,
+            cust.name,
+            v.registrationNo,
+            v.make,
+            v.model,
             prop.policyType,
             pol.totalPremium,
             pol.startDate,
@@ -56,42 +58,21 @@ SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
         JOIN pol.payment pay
         JOIN pay.quote q
         JOIN q.proposal prop
+        JOIN prop.customer cust
+        JOIN prop.vehicle v
         WHERE prop.id = ?1
-""")
+    """)
     PolicyResponseDto getByProposalId(Long proposalId);
 
 
-@Query("""
-SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
-        pol.id,
-        pol.policyNumber,
-        prop.customerName,
-        prop.registrationNo,
-        prop.vehicleMake,
-        prop.vehicleModel,
-        prop.policyType,
-        pol.totalPremium,
-        pol.startDate,
-        pol.endDate,
-        pol.policyPdfUrl
-    )
-    FROM Policy pol
-    JOIN pol.payment pay
-    JOIN pay.quote q
-    JOIN q.proposal prop
-    WHERE q.id = ?1
-""")
-    PolicyResponseDto getByQuoteId(Long quoteId);
-
-
-@Query("""
-SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
+    @Query("""
+        SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
             pol.id,
             pol.policyNumber,
-            prop.customerName,
-            prop.registrationNo,
-            prop.vehicleMake,
-            prop.vehicleModel,
+            cust.name,
+            v.registrationNo,
+            v.make,
+            v.model,
             prop.policyType,
             pol.totalPremium,
             pol.startDate,
@@ -102,35 +83,61 @@ SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
         JOIN pol.payment pay
         JOIN pay.quote q
         JOIN q.proposal prop
-        ORDER BY pol.id DESC
-""")
-    List<PolicyResponseDto> findAllPolicyDto();
-
-    Optional<Policy> findByProposalId(Long proposalId);
-
-    Optional<Policy> findByPaymentId(Long paymentId);
+        JOIN prop.customer cust
+        JOIN prop.vehicle v
+        WHERE q.id = ?1
+    """)
+    PolicyResponseDto getByQuoteId(Long quoteId);
 
 
     @Query("""
-SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDtoV2(
-        pol.policyNumber,
-        c.name,
-        prop.registrationNo,
-        prop.vehicleMake,
-        prop.vehicleModel,
-        prop.policyType,
-        pol.startDate,
-        pol.endDate,
-        pol.totalPremium,
-        pol.policyPdfUrl
-    )
-    FROM Policy pol
-    JOIN pol.payment pay
-    JOIN pay.quote q
-    JOIN q.proposal prop
-    JOIN prop.customer c
-    JOIN c.user u
-    WHERE u.username = ?1
-""")
+        SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto(
+            pol.id,
+            pol.policyNumber,
+            cust.name,
+            v.registrationNo,
+            v.make,
+            v.model,
+            prop.policyType,
+            pol.totalPremium,
+            pol.startDate,
+            pol.endDate,
+            pol.policyPdfUrl
+        )
+        FROM Policy pol
+        JOIN pol.payment pay
+        JOIN pay.quote q
+        JOIN q.proposal prop
+        JOIN prop.customer cust
+        JOIN prop.vehicle v
+        ORDER BY pol.id DESC
+    """)
+    List<PolicyResponseDto> findAllPolicyDto();
+
+
+
+
+    @Query("""
+        SELECT new com.springboot.AutomobileInsurance.dto.response.PolicyResponseDtoV2(
+            pol.policyNumber,
+            c.name,
+            v.registrationNo,
+            v.make,
+            v.model,
+            prop.policyType,
+            pol.startDate,
+            pol.endDate,
+            pol.totalPremium,
+            pol.policyPdfUrl
+        )
+        FROM Policy pol
+        JOIN pol.payment pay
+        JOIN pay.quote q
+        JOIN q.proposal prop
+        JOIN prop.customer c
+        JOIN prop.vehicle v
+        JOIN c.user u
+        WHERE u.username = ?1
+    """)
     List<PolicyResponseDtoV2> findCustomerPolicyByUsername(String name);
 }

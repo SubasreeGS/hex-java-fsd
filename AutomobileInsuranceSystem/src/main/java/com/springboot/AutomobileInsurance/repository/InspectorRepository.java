@@ -16,7 +16,7 @@ public interface InspectorRepository extends JpaRepository<Inspector, Long> {
         SELECT new com.springboot.AutomobileInsurance.dto.response.InspectorDropdownDto(
             i.id,
             i.name,
-            i.phoneNo
+            i.contact
         )
         FROM Inspector i
         ORDER BY i.name ASC

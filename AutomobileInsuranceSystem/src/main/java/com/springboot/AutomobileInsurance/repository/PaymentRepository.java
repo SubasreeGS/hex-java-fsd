@@ -12,14 +12,14 @@ import java.util.Optional;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     @Query("""
-SELECT new com.springboot.AutomobileInsurance.dto.response.PaymentReceiptDto(
+        SELECT new com.springboot.AutomobileInsurance.dto.response.PaymentReceiptDto(
             pay.id,
             pay.transactionRef,
             q.id,
             prop.id,
             pol.policyNumber,
-            prop.customerName,
-            prop.registrationNo,
+            cust.name,
+            v.registrationNo,
             pay.amount,
             pay.paymentDate,
             pay.status
@@ -27,10 +27,11 @@ SELECT new com.springboot.AutomobileInsurance.dto.response.PaymentReceiptDto(
         FROM Payment pay
         JOIN pay.quote q
         JOIN q.proposal prop
-        JOIN prop.policy pol
+        JOIN prop.customer cust
+        JOIN prop.vehicle v
+        LEFT JOIN Policy pol ON pol.payment = pay
         WHERE pay.id = ?1
-""")
-
+    """)
     PaymentReceiptDto getReceiptByPaymentId(Long paymentId);
 
     Optional<Payment> findByQuoteId(Long quoteId);

@@ -19,33 +19,34 @@ public interface ClaimAssessmentRepository extends JpaRepository<ClaimAssessment
     boolean existsByClaimId(Long claimId);
 
     @Query("""
-       SELECT new com.springboot.AutomobileInsurance.dto.response.InspectorTaskResponseDto(
-               ca.id,
-               c.claimNo,
-               prop.registrationNo,
-               prop.vehicleMake,
-               prop.vehicleModel,
-               prop.manufactureYear,
-               prop.vinNo,
-               prop.fuelType,
-               cust.name,
-               cust.phoneNo,
-               cust.address,
-               c.incidentDate,
-               c.incidentDescription,
-               c.claimedAmount,
-               ca.status
-           )
-           FROM ClaimAssessment ca
-           JOIN ca.inspector insp
-           JOIN insp.user u
-           JOIN ca.claim c
-           JOIN c.policy pol
-           JOIN pol.payment pay
-           JOIN pay.quote q
-           JOIN q.proposal prop
-           JOIN prop.customer cust
-           WHERE u.username = ?1
+        SELECT new com.springboot.AutomobileInsurance.dto.response.InspectorTaskResponseDto(
+            ca.id,
+            c.claimNo,
+            v.registrationNo,
+            v.make,
+            v.model,
+            v.manufactureYear,
+            v.vinNo,
+            v.fuelType,
+            cust.name,
+            cust.phoneNo,
+            cust.address,
+            c.incidentDate,
+            c.incidentDescription,
+            c.claimedAmount,
+            ca.status
+        )
+        FROM ClaimAssessment ca
+        JOIN ca.inspector insp
+        JOIN insp.user u
+        JOIN ca.claim c
+        JOIN c.policy pol
+        JOIN pol.payment pay
+        JOIN pay.quote q
+        JOIN q.proposal prop
+        JOIN prop.vehicle v
+        JOIN prop.customer cust
+        WHERE u.username =?1
     """)
     List<InspectorTaskResponseDto> findTasksByInspectorUsername(String username);
 }
