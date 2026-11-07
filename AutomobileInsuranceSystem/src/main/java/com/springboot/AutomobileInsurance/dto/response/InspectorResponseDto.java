@@ -3,6 +3,8 @@ package com.springboot.AutomobileInsurance.dto.response;
 public record InspectorResponseDto(
         Long id,
         String name,
-        Long userId,
-        String username
+        String username,
+        String email,
+        String contact,
+        String officerUsername
 ) {}

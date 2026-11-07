@@ -29,6 +29,12 @@ public class CustomerService {
 
 //add new customer
     public void insertCustomer(CustomerDto dto) {
+
+        //  Check if username already exists in user db
+        if (userRepository.existsByUsername(dto.username().trim())) {
+            throw new RuntimeException("Username '" + dto.username().trim() + "' is already taken. Please choose another.");
+        }
+
         //prepare user
         User user = new User();
         user.setUsername(dto.username());

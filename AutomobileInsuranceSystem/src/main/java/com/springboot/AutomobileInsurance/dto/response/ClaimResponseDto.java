@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record ClaimResponseDto(
-
+        Long id,
         String claimNo,
         String policyNumber,
         LocalDate incidentDate,

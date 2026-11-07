@@ -2,10 +2,7 @@ package com.springboot.AutomobileInsurance.service;
 
 import com.springboot.AutomobileInsurance.dto.request.ApproveIdvDto;
 import com.springboot.AutomobileInsurance.dto.request.ProposalSubmissionDto;
-import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDto;
-import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDtoV2;
-import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDtoV3;
-import com.springboot.AutomobileInsurance.dto.response.ProposalResponseDto;
+import com.springboot.AutomobileInsurance.dto.response.*;
 import com.springboot.AutomobileInsurance.enums.InspectionResult;
 import com.springboot.AutomobileInsurance.enums.InspectionStatus;
 import com.springboot.AutomobileInsurance.enums.PolicyType;
@@ -17,6 +14,7 @@ import com.springboot.AutomobileInsurance.model.*;
 import com.springboot.AutomobileInsurance.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -149,11 +147,20 @@ public class ProposalService {
         return proposalRepository.getByCustomerUsername(customerUsername,pageable);
     }
 
-    //get proposal by Inspector username
-    public List<ProposalInfoDtoV2> getByInspectorUsername(int page, int size, String inspectorUsername) {
-        Pageable pageable = PageRequest.of(page,size);
-        return  proposalRepository.getByInspectorUsername(inspectorUsername,pageable);
+    // get proposal by Inspector username with pagination metadata
+    public ProposalInfoPaginationDto getByInspectorUsername(int page, int size, String inspectorUsername) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProposalInfoDtoV2> proposalPage = proposalRepository.getByInspectorUsername(inspectorUsername, pageable);
+
+        PaginationDto paginationDto = new PaginationDto(
+                proposalPage.getTotalPages(),
+                proposalPage.getTotalElements(),
+                proposalPage.getNumberOfElements()
+        );
+
+        return new ProposalInfoPaginationDto(proposalPage.getContent(), paginationDto);
     }
+
 
     //get proposal by Officer username
     public List<ProposalInfoDtoV3> getByOfficerUsername(int page, int size, String officerUsername) {
@@ -161,10 +168,17 @@ public class ProposalService {
         return proposalRepository.getByOfficerUsername(officerUsername,pageable);
     }
 
-    //get all proposal by status
-    public List<ProposalInfoDtoV3> getByProposalStatus(ProposalStatus status,int page,int size,String officerUsername) {
-        Pageable pageable = PageRequest.of(page,size);
-        return proposalRepository.getByProposalStatus(status,officerUsername,pageable);
+    public ProposalInfoV3PaginationDto getByProposalStatus(ProposalStatus status, int page, int size, String officerUsername) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProposalInfoDtoV3> proposalPage = proposalRepository.getByProposalStatus(status, officerUsername, pageable);
+
+        PaginationDto paginationDto = new PaginationDto(
+                proposalPage.getTotalPages(),
+                proposalPage.getTotalElements(),
+                proposalPage.getNumberOfElements()
+        );
+
+        return new ProposalInfoV3PaginationDto(proposalPage.getContent(), paginationDto);
     }
 
 

@@ -2,7 +2,7 @@ package com.springboot.AutomobileInsurance.service;
 
 import com.springboot.AutomobileInsurance.dto.request.ClaimFileRequestDto;
 import com.springboot.AutomobileInsurance.dto.request.ClaimReviewRequestDto;
-import com.springboot.AutomobileInsurance.dto.response.ClaimResponseDto;
+import com.springboot.AutomobileInsurance.dto.response.*;
 import com.springboot.AutomobileInsurance.enums.AssessmentStatus;
 import com.springboot.AutomobileInsurance.enums.ClaimStatus;
 import com.springboot.AutomobileInsurance.exception.InvalidCallException;
@@ -12,12 +12,16 @@ import com.springboot.AutomobileInsurance.model.*;
 import com.springboot.AutomobileInsurance.repository.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -135,6 +139,47 @@ public class ClaimService {
     public List<ClaimResponseDto> getClaimsByCustomerUsername(String username) {
         return claimRepository.findClaimsByCustomerUsername(username);
     }
+    /*
+    @Transactional
+    public void assignInspector(Long inspectorId, Long claimId, String officerUsername) {
+        // 1. Fetch Claim
+        Claim claim = claimRepository.findById(claimId)
+                .orElseThrow(() -> new ResourceNotFoundException("Claim not found with id: " + claimId));
+
+        // 2. Fetch Inspector
+        Inspector inspector = inspectorRepository.findById(inspectorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Inspector not found with id: " + inspectorId));
+
+        // 3. Link the reviewing Officer
+        Officer officer = officerRepository.findByOfficerUsername(officerUsername);
+        if (officer == null) {
+            throw new ResourceNotFoundException("Officer record not found for username: " + officerUsername);
+        }
+        claim.setOfficer(officer);
+
+        // 4. Upsert ClaimAssessment (fetch existing or create new to avoid duplicate key exceptions)
+        ClaimAssessment assessment = claimAssessmentRepository.findByClaimId(claimId)
+                .orElseGet(ClaimAssessment::new);
+
+        assessment.setClaim(claim);
+        assessment.setInspector(inspector);
+
+        // Set initial status and cost if it's a new assessment
+        if (assessment.getStatus() == null) {
+            assessment.setStatus(AssessmentStatus.PENDING);
+        }
+        if (assessment.getEstimatedCost() == null) {
+            assessment.setEstimatedCost(BigDecimal.ZERO);
+        }
+
+        claimAssessmentRepository.save(assessment);
+
+        // 5. Transition claim status to UNDER_ASSESSMENT
+        claim.setStatus(ClaimStatus.UNDER_ASSESSMENT);
+        claimRepository.save(claim);
+    }
+
+     */
 
     public void assignInspector(Long inspectorId, Long claimId, String officerUsername) {
         Claim claim = claimRepository.findById(claimId)
@@ -147,6 +192,7 @@ public class ClaimService {
         Officer officer = officerRepository.findByOfficerUsername(officerUsername);
 
         claim.setOfficer(officer);
+
 
         // Create an initial PENDING ClaimAssessment record for this inspector
         ClaimAssessment assessment = new ClaimAssessment();
@@ -162,14 +208,22 @@ public class ClaimService {
         claimRepository.save(claim);
     }
 
-    public void reviewClaim(Long claimId, ClaimReviewRequestDto request, String officerUsername) {
+    public ClaimResponseV2PaginationDto getAllClaimsForOfficer(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ClaimResponseDtoV2> claimPage = claimRepository.findAllClaimsForOfficer(pageable);
+
+        PaginationDto paginationDto = new PaginationDto(
+                claimPage.getTotalPages(),
+                claimPage.getTotalElements(),
+                claimPage.getNumberOfElements()
+        );
+
+        return new ClaimResponseV2PaginationDto(claimPage.getContent(), paginationDto);
+    }
+
+    public void reviewClaim(Long claimId, ClaimReviewRequestDto request) {
         Claim claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
-
-        // 1. Verify Officer Assignment
-        if ( !claim.getOfficer().getUser().getUsername().equals(officerUsername)) {
-            throw new InvalidCallException("Unauthorized: You are not the assigned officer for this claim.");
-        }
 
 
         // 3. Status-Specific Validation & Processing
@@ -188,4 +242,33 @@ public class ClaimService {
         claimRepository.save(claim);
     }
 
+
+//claim process settlement
+    public void processSettlement(Long claimId) {
+        Claim claim = claimRepository.findById(claimId)
+                .orElseThrow(() -> new ResourceNotFoundException("Claim record not found"));
+        
+
+        // Generate settlement transaction reference reusing policy payment identifier
+        String originalTxn = claim.getPolicy().getPayment().getTransactionRef();
+        String settlementRef = "SETTLE-" + (int)((Math.random() * 900000) + 100000) + "-" + originalTxn;
+
+        // Transition status to SETTLED and record metadata
+        claim.setStatus(ClaimStatus.SETTLED);
+        claim.setSettlementRef(settlementRef);
+        claim.setSettledDate(LocalDateTime.now());
+
+        claimRepository.save(claim);
+    }
+
+    public ClaimSettlementReceiptDto getSettlementReceipt(Long claimId) {
+        Claim claim = claimRepository.findById(claimId)
+                .orElseThrow(() -> new ResourceNotFoundException("Claim record not found"));
+
+        if (claim.getStatus() != ClaimStatus.SETTLED) {
+            throw new InvalidCallException("Receipt is only generated for SETTLED claims.");
+        }
+
+        return claimRepository.getSettlementReceiptByClaimId(claimId);
+    }
 }

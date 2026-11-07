@@ -1,9 +1,10 @@
 package com.springboot.AutomobileInsurance.dto.response;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 public record ErrorDto(
         String message,
-        String status,
-        LocalDateTime timestamp
+        String comments,
+        Instant timestamp
 ) {}

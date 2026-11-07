@@ -2,10 +2,7 @@ package com.springboot.AutomobileInsurance.controller;
 
 import com.springboot.AutomobileInsurance.dto.request.ApproveIdvDto;
 import com.springboot.AutomobileInsurance.dto.request.ProposalSubmissionDto;
-import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDto;
-import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDtoV2;
-import com.springboot.AutomobileInsurance.dto.response.ProposalInfoDtoV3;
-import com.springboot.AutomobileInsurance.dto.response.ProposalResponseDto;
+import com.springboot.AutomobileInsurance.dto.response.*;
 import com.springboot.AutomobileInsurance.enums.ProposalStatus;
 import com.springboot.AutomobileInsurance.service.ProposalService;
 import jakarta.transaction.Transactional;
@@ -18,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173/")
 @Transactional
 public class ProposalController {
 
@@ -62,13 +60,14 @@ public class ProposalController {
 
     }
 
-    //get proposal by inspector username (v3)
+    // get proposal by inspector username (v3)
     @GetMapping("/api/proposal/inspector")
-    public List<ProposalInfoDtoV2> getByInspectorUsername(@RequestParam(name = "page",required = false,defaultValue = "0") int page,
-                                                          @RequestParam(name ="size",required = false,defaultValue = "6")int size,
-                                                          Principal principal)
+    public ProposalInfoPaginationDto getByInspectorUsername(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "6") int size,
+            Principal principal)
     {
-        return proposalService.getByInspectorUsername(page,size,principal.getName());
+        return proposalService.getByInspectorUsername(page, size, principal.getName());
     }
 
     //get proposal by Officer username (v4)
@@ -83,12 +82,13 @@ public class ProposalController {
 
     //get proposal by status (v5)
     @GetMapping("/api/proposal/status/{status}")
-    public List<ProposalInfoDtoV3> getByProposalStatus(@PathVariable ProposalStatus status,
-                                                       @RequestParam(name = "page",required = false,defaultValue = "0") int page,
-                                                       @RequestParam(name ="size",required = false,defaultValue = "10")int size,
-                                                       Principal principal)
+    public ProposalInfoV3PaginationDto getByProposalStatus(
+            @PathVariable ProposalStatus status,
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "5") int size,
+            Principal principal)
     {
-        return proposalService.getByProposalStatus(status,page,size,principal.getName());
+        return proposalService.getByProposalStatus(status, page, size, principal.getName());
     }
 /*
     @GetMapping("/api/proposal/officer/{officerId}")

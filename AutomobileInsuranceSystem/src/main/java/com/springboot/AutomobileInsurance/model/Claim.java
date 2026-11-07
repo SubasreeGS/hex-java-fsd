@@ -50,6 +50,12 @@ public class Claim {
     @Enumerated(EnumType.STRING)
     private ClaimStatus status;
 
+    @Column(name = "settlement_ref", length = 100)
+    private String settlementRef;
+
+    @Column(name = "settled_date")
+    private LocalDateTime settledDate;
+
 
     @ManyToOne
     @JoinColumn(name = "policy_id", nullable = false)

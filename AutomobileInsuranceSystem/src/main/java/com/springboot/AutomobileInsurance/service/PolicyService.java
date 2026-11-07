@@ -1,5 +1,7 @@
 package com.springboot.AutomobileInsurance.service;
 
+import com.springboot.AutomobileInsurance.dto.response.PaginationDto;
+import com.springboot.AutomobileInsurance.dto.response.PolicyPaginationDto;
 import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto;
 import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDtoV2;
 import com.springboot.AutomobileInsurance.exception.ResourceNotFoundException;
@@ -10,6 +12,9 @@ import com.springboot.AutomobileInsurance.repository.PolicyRepository;
 import com.springboot.AutomobileInsurance.repository.ProposalRepository;
 import com.springboot.AutomobileInsurance.repository.QuoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,5 +58,21 @@ public class PolicyService {
 
     public List<PolicyResponseDtoV2> getMyPolicyCards(String name) {
         return policyRepository.findCustomerPolicyByUsername(name);
+    }
+
+    public PolicyPaginationDto getAllPoliciesWithPagination(int page, int size) {
+        int pageNo = Math.max(page, 0);
+        int pageSize = (size < 1) ? 5 : size;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        Page<PolicyResponseDto> policyPage = policyRepository.findAllPoliciesPaginated(pageable);
+
+        PaginationDto paginationDto = new PaginationDto(
+                policyPage.getTotalPages(),
+                policyPage.getTotalElements(),
+                policyPage.getNumberOfElements()
+        );
+
+        return new PolicyPaginationDto(policyPage.getContent(), paginationDto);
     }
 }

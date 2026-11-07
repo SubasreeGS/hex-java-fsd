@@ -1,7 +1,9 @@
 package com.springboot.AutomobileInsurance.service;
 
 import com.springboot.AutomobileInsurance.dto.request.AdminDto;
+import com.springboot.AutomobileInsurance.dto.response.DetailsDto;
 import com.springboot.AutomobileInsurance.enums.Role;
+import com.springboot.AutomobileInsurance.exception.InactiveUserException;
 import com.springboot.AutomobileInsurance.exception.InvalidCallException;
 import com.springboot.AutomobileInsurance.model.User;
 import com.springboot.AutomobileInsurance.repository.UserRepository;
@@ -26,4 +28,12 @@ public class UserService {
         userRepository.save(user);
 
     }
+
+    public DetailsDto getUserDetails(String loggedInUsername) {
+        DetailsDto detailsDto = userRepository.getUserDetails(loggedInUsername);
+        if(!detailsDto.isActive())
+            throw new InactiveUserException("User is disabled");
+        return detailsDto;
+    }
+
 }

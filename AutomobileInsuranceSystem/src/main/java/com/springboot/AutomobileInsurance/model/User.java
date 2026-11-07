@@ -33,6 +33,13 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    private boolean isActive;
+
+    @PrePersist
+    public void init(){
+        isActive = true; // 0X01
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.toString()));

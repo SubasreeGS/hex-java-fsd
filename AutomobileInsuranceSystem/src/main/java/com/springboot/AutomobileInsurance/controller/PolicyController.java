@@ -1,5 +1,6 @@
 package com.springboot.AutomobileInsurance.controller;
 
+import com.springboot.AutomobileInsurance.dto.response.PolicyPaginationDto;
 import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDto;
 import com.springboot.AutomobileInsurance.dto.response.PolicyResponseDtoV2;
 import com.springboot.AutomobileInsurance.service.PolicyService;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173/")
 public class PolicyController {
 
     private final PolicyService policyService;
@@ -49,5 +51,11 @@ public class PolicyController {
         return policyService.getAll();
     }
 
+    @GetMapping("/api/policy/paginated")
+    public PolicyPaginationDto getAllPoliciesPaginated(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "5") int size) {
+        return policyService.getAllPoliciesWithPagination(page, size);
+    }
 
 }

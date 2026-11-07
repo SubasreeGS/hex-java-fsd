@@ -22,4 +22,7 @@ public interface InspectorRepository extends JpaRepository<Inspector, Long> {
         ORDER BY i.name ASC
     """)
     List<InspectorDropdownDto> findAllForDropdown();
+
+    @Query("SELECT i FROM Inspector i WHERE i.user.username = ?1")
+    Optional<Inspector> findByUserUsername(String username);
 }

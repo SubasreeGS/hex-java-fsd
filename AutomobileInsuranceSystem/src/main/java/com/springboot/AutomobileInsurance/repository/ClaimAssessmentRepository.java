@@ -2,6 +2,8 @@ package com.springboot.AutomobileInsurance.repository;
 
 import com.springboot.AutomobileInsurance.dto.response.InspectorTaskResponseDto;
 import com.springboot.AutomobileInsurance.model.ClaimAssessment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -38,15 +40,18 @@ public interface ClaimAssessmentRepository extends JpaRepository<ClaimAssessment
         )
         FROM ClaimAssessment ca
         JOIN ca.inspector insp
-        JOIN insp.user u
+        JOIN insp.user inspUser
         JOIN ca.claim c
         JOIN c.policy pol
-        JOIN pol.payment pay
-        JOIN pay.quote q
-        JOIN q.proposal prop
-        JOIN prop.vehicle v
-        JOIN prop.customer cust
-        WHERE u.username =?1
+        LEFT JOIN pol.payment pay
+        LEFT JOIN pay.quote q
+        LEFT JOIN q.proposal prop
+        LEFT JOIN prop.vehicle v
+        LEFT JOIN prop.customer cust
+        WHERE inspUser.username=?1
+        ORDER BY ca.id DESC
     """)
-    List<InspectorTaskResponseDto> findTasksByInspectorUsername(String username);
+    Page<InspectorTaskResponseDto> findTasksByInspectorUsername(String username, Pageable pageable);
+
+
 }

@@ -3,7 +3,9 @@ package com.springboot.AutomobileInsurance.service;
 import com.springboot.AutomobileInsurance.dto.request.ClaimAssessmentRequestDto;
 import com.springboot.AutomobileInsurance.dto.request.SubmitAssessmentReportDto;
 import com.springboot.AutomobileInsurance.dto.response.ClaimAssessmentResponseDto;
+import com.springboot.AutomobileInsurance.dto.response.InspectorTaskPaginationDto;
 import com.springboot.AutomobileInsurance.dto.response.InspectorTaskResponseDto;
+import com.springboot.AutomobileInsurance.dto.response.PaginationDto;
 import com.springboot.AutomobileInsurance.enums.AssessmentStatus;
 import com.springboot.AutomobileInsurance.enums.ClaimStatus;
 import com.springboot.AutomobileInsurance.exception.InvalidCallException;
@@ -17,6 +19,9 @@ import com.springboot.AutomobileInsurance.repository.ClaimRepository;
 import com.springboot.AutomobileInsurance.repository.InspectorRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,8 +124,17 @@ public class ClaimAssessmentService {
                 .toList();
     }
 
-    public List<InspectorTaskResponseDto> getMyTasks(String username) {
-        return claimAssessmentRepository.findTasksByInspectorUsername(username);
+    public InspectorTaskPaginationDto getMyTasks(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<InspectorTaskResponseDto> taskPage = claimAssessmentRepository.findTasksByInspectorUsername(username, pageable);
+
+        PaginationDto paginationDto = new PaginationDto(
+                taskPage.getTotalPages(),
+                taskPage.getTotalElements(),
+                taskPage.getNumberOfElements()
+        );
+
+        return new InspectorTaskPaginationDto(taskPage.getContent(), paginationDto);
     }
 
     //inspector submits the assessment report
@@ -151,4 +165,7 @@ public class ClaimAssessmentService {
             claimRepository.save(claim);
 
     }
+
+
+
 }

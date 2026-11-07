@@ -13,6 +13,24 @@ public class InspectorMapper {
         inspector.setContact(dto.contact());
         return inspector;
     }
+
+    public static InspectorResponseDto convertEntityToDto(Inspector ins) {
+        return new InspectorResponseDto(
+                ins.getId(),
+                ins.getName(),
+                ins.getUser().getUsername(),
+                ins.getEmail(),
+                ins.getContact(),
+                ins.getOfficer().getUser().getUsername()
+        );
+
+    }
+
+   
+    
+    
+
+
 /*
     public static InspectorResponseDto convertEntityToDto(Inspector inspector) {
         return new InspectorResponseDto(

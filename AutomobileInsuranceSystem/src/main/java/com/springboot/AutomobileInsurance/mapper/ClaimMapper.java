@@ -9,7 +9,7 @@ public final class ClaimMapper {
     public static ClaimResponseDto convertEntityToDto(Claim claim) {
 
         return new ClaimResponseDto(
-
+                claim.getId(),
                 claim.getClaimNo(),
                 claim.getPolicy().getPolicyNumber(),
                 claim.getIncidentDate(),

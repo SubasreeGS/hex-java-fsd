@@ -3,6 +3,9 @@ package com.springboot.AutomobileInsurance.controller;
 import com.springboot.AutomobileInsurance.dto.request.ClaimFileRequestDto;
 import com.springboot.AutomobileInsurance.dto.request.ClaimReviewRequestDto;
 import com.springboot.AutomobileInsurance.dto.response.ClaimResponseDto;
+import com.springboot.AutomobileInsurance.dto.response.ClaimResponseDtoV2;
+import com.springboot.AutomobileInsurance.dto.response.ClaimResponseV2PaginationDto;
+import com.springboot.AutomobileInsurance.dto.response.ClaimSettlementReceiptDto;
 import com.springboot.AutomobileInsurance.service.ClaimService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,8 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173/")
+
 public class ClaimController {
 
     private final ClaimService claimService;
@@ -22,6 +27,14 @@ public class ClaimController {
     @PostMapping("/api/claim/file")
     public void fileClaim(@Valid @RequestBody ClaimFileRequestDto request) {
          claimService.fileClaim(request);
+    }
+
+    // Dedicated Officer Ledger Endpoint
+    @GetMapping("/api/claim/officer/all")
+    public ClaimResponseV2PaginationDto getAllClaimsForOfficer(
+            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(name = "size", required = false, defaultValue = "5") int size) {
+        return claimService.getAllClaimsForOfficer(page, size);
     }
 
     // Officer assigns an inspector to investigate a filed claim
@@ -43,9 +56,9 @@ public class ClaimController {
     @PutMapping("/api/claim/review/{claimId}")
     public void reviewClaim(
             @PathVariable Long claimId,
-            @Valid @RequestBody ClaimReviewRequestDto request,
-            Principal principal) {
-        claimService.reviewClaim(claimId, request, principal.getName());
+            @Valid @RequestBody ClaimReviewRequestDto request
+           ) {
+        claimService.reviewClaim(claimId, request);
     }
 
     /*// Review / approve / reject claim by officer
@@ -83,4 +96,18 @@ public class ClaimController {
     public List<ClaimResponseDto> getAll() {
         return claimService.getAll();
     }
+
+
+    // Officer triggers payout to customer's account
+    @PostMapping("/api/claim/settlement/process/{claimId}")
+    public void processSettlement(@PathVariable Long claimId) {
+        claimService.processSettlement(claimId);
+    }
+
+    // Both Customer & Officer use this to retrieve and print the receipt
+    @GetMapping("/api/claim/settlement/receipt/{claimId}")
+    public ClaimSettlementReceiptDto getSettlementReceipt(@PathVariable Long claimId) {
+        return claimService.getSettlementReceipt(claimId);
+    }
+
 }

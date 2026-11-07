@@ -4,6 +4,9 @@ import com.springboot.AutomobileInsurance.enums.PolicyType;
 import com.springboot.AutomobileInsurance.enums.ProposalStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.Instant;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,6 +39,10 @@ public class Proposal {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ProposalStatus status;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Instant createdAt;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)

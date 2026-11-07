@@ -15,9 +15,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
+@EnableTransactionManagement
 @Configuration
 @RequiredArgsConstructor
+
+
 public class SecurityConfig {
     private final MyUserDetailsService myUserDetailsService ;
     private final JwtFilter jwtFilter;
@@ -29,21 +34,43 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
 
+                        .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
+
                         //customer
                         .requestMatchers(HttpMethod.POST,"/api/customer/add").permitAll()
 
                         // login API
                         .requestMatchers(HttpMethod.GET,"/api/auth/login").authenticated()
 
+                        // user details API
+                        .requestMatchers(HttpMethod.GET,"/api/auth/user-details").authenticated()
+
+
+
                         //admin
                         .requestMatchers(HttpMethod.POST,"/api/admin/add").permitAll()
 
                         //officer
                         .requestMatchers(HttpMethod.POST,"/api/officer/add").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/api/officer/analytics").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET,"/api/officer/proposals/filter").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET,"/api/officer/claims/filter").hasAuthority("OFFICER")
+
 
                         //inspector
                         .requestMatchers(HttpMethod.POST,"/api/inspector/add").hasAuthority("OFFICER")
-                        .requestMatchers(HttpMethod.GET, "/api/inspector/all").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET,"/api/inspector/{id}").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.PUT,"/api/inspector/{id}").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.DELETE,"/api/inspector/{id}").hasAuthority("OFFICER")
+
+                        .requestMatchers(HttpMethod.GET,"/api/inspector/profile/me").hasAuthority("INSPECTOR")
+                        .requestMatchers(HttpMethod.GET,"/api/inspector/all").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET, "/api/inspector/dropdown").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET, "/api/inspector/metrics/{inspectorId}").hasAuthority("INSPECTOR")
+                        .requestMatchers(HttpMethod.GET, "/api/inspector/claims/filter").hasAuthority("INSPECTOR")
+                        .requestMatchers(HttpMethod.GET, "/api/inspector/proposals/filter").hasAuthority("INSPECTOR")
+
+
 
                         //customer
                         .requestMatchers(HttpMethod.GET,"/api/customer/v1/{id}").hasAnyAuthority("CUSTOMER","OFFICER")
@@ -97,6 +124,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/claim/policy/v3/{policyId}").hasAnyAuthority("CUSTOMER", "OFFICER")
                         .requestMatchers(HttpMethod.GET, "/api/claim/customer/my-claims/v4").hasAuthority("CUSTOMER")
                         .requestMatchers(HttpMethod.GET, "/api/claim/all").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET, "/api/claim/officer/all").hasAuthority("OFFICER")
+
 
                         //Claim Assessment
                         .requestMatchers(HttpMethod.GET, "/api/assessment/inspector/my-tasks").hasAuthority("INSPECTOR")
@@ -106,6 +135,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/assessment/claim/v2/{claimId}").hasAnyAuthority("INSPECTOR", "OFFICER")
                         .requestMatchers(HttpMethod.GET, "/api/assessment/inspector/v3/{inspectorId}").hasAnyAuthority("INSPECTOR", "OFFICER")
                         .requestMatchers(HttpMethod.GET, "/api/assessment/all").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.POST, "/api/claim/settlement/process/{claimId}").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET, "/api/claim/settlement/receipt/{claimId}").hasAnyAuthority("CUSTOMER", "OFFICER")
+
 
                         .anyRequest().permitAll()
                 );
