@@ -14,6 +14,8 @@ import com.springboot.AutomobileInsurance.model.*;
 import com.springboot.AutomobileInsurance.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +35,7 @@ public class ProposalService {
     private final InspectorRepository inspectorRepository;
     private final InspectionRepository inspectionRepository;
     private final OfficerRepository officerRepository;
+    private final Logger log = LoggerFactory.getLogger(ProposalService.class);
 
     public void submitProposal(ProposalSubmissionDto dto,String customerUsername) {
 
@@ -57,6 +60,7 @@ public class ProposalService {
 
         //save proposal in db
          proposalRepository.save(proposal);
+        log.info("Proposal #{} created with status: PROPOSAL_SUBMITTED", proposal.getId());
 
     }
 
@@ -93,6 +97,7 @@ public class ProposalService {
         //save inspection in db
         inspectionRepository.save(inspection);
 
+
         //assign officer for proposal
         proposal.setOfficer(officer);
         //set status of proposal as inspector assigned
@@ -100,6 +105,8 @@ public class ProposalService {
 
         //save proposal to db
         proposalRepository.save(proposal);
+        log.info("Proposal ID: {} updated to INSPECTOR_ASSIGNED", proposalId);
+
     }
 
     public void approveIdv(Long proposalId, ApproveIdvDto dto,String officerUsername) {

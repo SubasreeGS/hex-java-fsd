@@ -32,7 +32,7 @@ public class Inspection {
     @Column(name = "inspection_photos_url", length = 500)
     private String inspectionPhotosUrl;
 
-    @Column(name = "inspection_notes")
+    @Column(name = "inspection_notes",columnDefinition = "TEXT")
     private String inspectionNotes;
 
     @Enumerated(EnumType.STRING)

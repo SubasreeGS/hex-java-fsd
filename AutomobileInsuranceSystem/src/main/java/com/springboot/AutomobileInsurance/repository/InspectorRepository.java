@@ -25,4 +25,18 @@ public interface InspectorRepository extends JpaRepository<Inspector, Long> {
 
     @Query("SELECT i FROM Inspector i WHERE i.user.username = ?1")
     Optional<Inspector> findByUserUsername(String username);
+
+    @Query("""
+        SELECT new com.springboot.AutomobileInsurance.dto.response.InspectorDropdownDto(
+            i.id,
+            i.name,
+            i.contact
+        )
+        FROM Inspector i
+        JOIN i.officer o
+        JOIN o.user u
+        WHERE u.username = ?1
+        ORDER BY i.name ASC
+    """)
+    List<InspectorDropdownDto> findMyInspectorsForDropdown(String officerUsername);
 }

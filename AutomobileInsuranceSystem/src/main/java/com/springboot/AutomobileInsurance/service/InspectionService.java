@@ -13,6 +13,8 @@ import com.springboot.AutomobileInsurance.model.Proposal;
 import com.springboot.AutomobileInsurance.repository.InspectionRepository;
 import com.springboot.AutomobileInsurance.repository.ProposalRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ public class InspectionService {
 
     private final InspectionRepository inspectionRepository;
     private final ProposalRepository proposalRepository;
+    private final Logger log = LoggerFactory.getLogger(InspectionService.class);
 
     //inspector submits inspection records
     public void submitReport(Long proposalId, SubmitInspectionReportDto dto) {
@@ -64,6 +67,8 @@ public class InspectionService {
         //save records in db
         inspectionRepository.save(inspection);
         proposalRepository.save(proposal);
+        log.info("Inspection ID report saved ");
+
 
     }
 

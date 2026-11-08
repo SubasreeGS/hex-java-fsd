@@ -116,6 +116,10 @@ public class InspectorController {
             @RequestParam(name = "size", required = false, defaultValue = "5") int size) {
         return inspectorService.getInspectorsWithPagination(page, size);
     }
+    @GetMapping("/api/inspector/my-inspectors/dropdown")
+    public List<InspectorDropdownDto> getMyInspectorsForDropdown(Principal principal) {
+        return inspectorService.getMyInspectorsForDropdown(principal.getName());
+    }
 
 
 

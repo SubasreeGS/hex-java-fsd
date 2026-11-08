@@ -17,12 +17,16 @@ import com.springboot.AutomobileInsurance.repository.*;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import java.security.Principal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -40,12 +44,14 @@ public class InspectorService {
     private final OfficerRepository officerRepository;
     private final InspectionRepository inspectionRepository;
     private final ClaimRepository claimRepository;
+    private final Logger log = LoggerFactory.getLogger(InspectorService.class);
 
     @Transactional
     public InspectorResponseDto insertInspector(InspectorDto dto,String officerUsername) {
-
+        log.info("Officer '{}' initiating onboarding for Inspector: '{}'", officerUsername, dto.username());
         //  Check if username already exists in user db
         if (userRepository.existsByUsername(dto.username().trim())) {
+            log.warn("Inspector creation rejected: Username '{}' is duplicate", dto.username());
             throw new RuntimeException("Username '" + dto.username().trim() + "' is already taken. Please choose another.");
         }
 
@@ -70,6 +76,8 @@ public class InspectorService {
 
         //  add inspector into db
         Inspector savedInspector = inspectorRepository.save(inspector);
+        log.info("Inspector '{}' registered successfully with ID: {} linked to Officer: '{}'",
+                savedInspector.getName(), savedInspector.getId(), officerUsername);
 
         return InspectorMapper.convertEntityToDto(savedInspector);
 
@@ -117,13 +125,16 @@ public class InspectorService {
     }
 
     public void deleteById(long id) {
+        log.warn("Initiating deletion of Inspector ID: {}", id);
         Inspector inspector = inspectorRepository.findById(id)
+
                 .orElseThrow(() -> new ResourceNotFoundException("Inspector record not found with id: " + id));
 
         Long userId = (inspector.getUser() != null) ? inspector.getUser().getId() : null;
 
         // Delete inspector profile first
         inspectorRepository.delete(inspector);
+        log.info("Inspector ID: {} and associated credentials deleted successfully", id);
 
         // Delete linked auth user
         if (userId != null) {
@@ -241,5 +252,9 @@ public class InspectorService {
         );
 
         return new InspectorPaginationDto(dtoList, paginationDto);
+    }
+
+    public List<InspectorDropdownDto> getMyInspectorsForDropdown(String officerUsername) {
+        return inspectorRepository.findMyInspectorsForDropdown(officerUsername);
     }
 }

@@ -13,6 +13,8 @@ import com.springboot.AutomobileInsurance.repository.CustomerRepository;
 import com.springboot.AutomobileInsurance.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Logger log = LoggerFactory.getLogger(PolicyService.class);
 
 //add new customer
     public void insertCustomer(CustomerDto dto) {
@@ -49,6 +52,7 @@ public class CustomerService {
         customer.setUser(user);
         //save customer in db
         customerRepository.save(customer);
+        log.info("Inserted customer successfully");
     }
 //get customer by customer id
     public CustomerResponseDto getById(Long id) {
@@ -111,6 +115,7 @@ public class CustomerService {
         }
 
         customerRepository.save(customer);
+        log.info("customer updated successfully");
     }
 
     // Update logged-in customer's profile
@@ -146,5 +151,6 @@ public class CustomerService {
         }
 
         customerRepository.save(customer);
+        log.info("customer updated successfully");
     }
 }

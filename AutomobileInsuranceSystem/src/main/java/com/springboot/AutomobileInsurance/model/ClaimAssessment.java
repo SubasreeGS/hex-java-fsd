@@ -25,7 +25,7 @@ public class ClaimAssessment {
     @Column(name = "damage_photos_url", length = 500)
     private String damagePhotosUrl;
 
-    @Column(name = "assessment_notes")
+    @Column(name = "assessment_notes",columnDefinition = "TEXT")
     private String assessmentNotes;
 
     @Enumerated(EnumType.STRING)

@@ -12,6 +12,8 @@ import com.springboot.AutomobileInsurance.repository.PolicyRepository;
 import com.springboot.AutomobileInsurance.repository.ProposalRepository;
 import com.springboot.AutomobileInsurance.repository.QuoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,12 +28,14 @@ public class PolicyService {
     private final PolicyRepository policyRepository;
     private final ProposalRepository proposalRepository;
     private final QuoteRepository quoteRepository;
+    private final Logger log = LoggerFactory.getLogger(PolicyService.class);
 
     //get policy by policy number
     public PolicyResponseDto getByPolicyNumber(String policyNumber) {
         Policy policy = policyRepository.findByPolicyNumber(policyNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Policy not found"));
         return policyRepository.getByPolicyNumber(policyNumber);
+
     }
 
     //get by quote id
@@ -58,6 +62,7 @@ public class PolicyService {
 
     public List<PolicyResponseDtoV2> getMyPolicyCards(String name) {
         return policyRepository.findCustomerPolicyByUsername(name);
+
     }
 
     public PolicyPaginationDto getAllPoliciesWithPagination(int page, int size) {

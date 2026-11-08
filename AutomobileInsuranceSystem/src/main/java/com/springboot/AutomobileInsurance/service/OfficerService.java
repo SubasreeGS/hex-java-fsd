@@ -11,6 +11,8 @@ import com.springboot.AutomobileInsurance.model.Officer;
 import com.springboot.AutomobileInsurance.model.User;
 import com.springboot.AutomobileInsurance.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,10 +33,14 @@ public class OfficerService {
     private final ProposalRepository proposalRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Logger log = LoggerFactory.getLogger(OfficerService.class);
 
     public void insertOfficer(OfficerDto dto) {
         //  Check if username already exists in user db
+        log.info("Attempting to onboard new Officer with username: '{}'", dto.username());
+
         if (userRepository.existsByUsername(dto.username().trim())) {
+            log.warn("Onboarding failed: Username '{}' already taken", dto.username());
             throw new RuntimeException("Username '" + dto.username().trim() + "' is already taken. Please choose another.");
         }
 
@@ -54,6 +60,7 @@ public class OfficerService {
 
         // Step 4: Save officer
         officerRepository.save(officer);
+        log.info("Officer '{}' successfully created with ID: {}", officer.getName(), officer.getId());
     }
 
     public OfficerAnalyticsDto getOfficerAnalytics() {
@@ -119,6 +126,7 @@ public class OfficerService {
         );
     }
     public OfficerPaginationDto getOfficersWithPagination(int page, int size) {
+        log.info("Fetching officer directory - Page: {}, Size: {}", page, size);
         int pageNo = Math.max(page, 0);
         int pageSize = (size < 1) ? 5 : size;
         Pageable pageable = PageRequest.of(pageNo, pageSize);

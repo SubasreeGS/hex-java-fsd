@@ -12,6 +12,8 @@ import com.springboot.AutomobileInsurance.model.*;
 import com.springboot.AutomobileInsurance.repository.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +37,7 @@ public class ClaimService {
     private final OfficerRepository officerRepository;
     private final InspectorRepository inspectorRepository;
     private final ClaimAssessmentRepository claimAssessmentRepository;
+    private final Logger log = LoggerFactory.getLogger(ClaimService.class);
 
     @Transactional
     public void fileClaim(ClaimFileRequestDto request) {
@@ -61,6 +64,7 @@ public class ClaimService {
         claim.setStatus(ClaimStatus.FILED);
 
          claimRepository.save(claim);
+        log.info("Claim registered successfully with Claim Number: '{}'", claim.getClaimNo());
 
     }
 /*
@@ -185,6 +189,7 @@ public class ClaimService {
         Claim claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
 
+
         Inspector inspector = inspectorRepository.findById(inspectorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Inspector not found"));
 
@@ -202,6 +207,7 @@ public class ClaimService {
         assessment.setEstimatedCost(BigDecimal.ZERO);
 
         claimAssessmentRepository.save(assessment);
+        log.info("Inspector assigned for the claim");
 
         // Update claim status so the officer knows it is under inspection
         claim.setStatus(ClaimStatus.UNDER_ASSESSMENT);
@@ -222,6 +228,7 @@ public class ClaimService {
     }
 
     public void reviewClaim(Long claimId, ClaimReviewRequestDto request) {
+        log.info("officer is reviewing claim");
         Claim claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
 
@@ -245,6 +252,7 @@ public class ClaimService {
 
 //claim process settlement
     public void processSettlement(Long claimId) {
+        log.info("Officer processing disbursement for Claim ID: {}", claimId);
         Claim claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new ResourceNotFoundException("Claim record not found"));
         
@@ -268,7 +276,7 @@ public class ClaimService {
         if (claim.getStatus() != ClaimStatus.SETTLED) {
             throw new InvalidCallException("Receipt is only generated for SETTLED claims.");
         }
-
+        log.info("Payout completed for Claim ID: {}",claimId);
         return claimRepository.getSettlementReceiptByClaimId(claimId);
     }
 }

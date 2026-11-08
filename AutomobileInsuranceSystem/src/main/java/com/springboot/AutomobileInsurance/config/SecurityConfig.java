@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/inspector/metrics/{inspectorId}").hasAuthority("INSPECTOR")
                         .requestMatchers(HttpMethod.GET, "/api/inspector/claims/filter").hasAuthority("INSPECTOR")
                         .requestMatchers(HttpMethod.GET, "/api/inspector/proposals/filter").hasAuthority("INSPECTOR")
+                        .requestMatchers(HttpMethod.GET, "/api/inspector/my-inspectors/dropdown").hasAuthority("OFFICER")
 
 
 

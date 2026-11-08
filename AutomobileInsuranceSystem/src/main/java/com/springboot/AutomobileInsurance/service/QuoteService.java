@@ -14,6 +14,8 @@ import com.springboot.AutomobileInsurance.repository.InspectionRepository;
 import com.springboot.AutomobileInsurance.repository.ProposalRepository;
 import com.springboot.AutomobileInsurance.repository.QuoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class QuoteService {
     private final QuoteRepository quoteRepository;
     private final ProposalRepository proposalRepository;
     private final InspectionRepository inspectionRepository;
+    private final Logger log = LoggerFactory.getLogger(PolicyService.class);
 
     // Standard insurance premium rates
     private final BigDecimal fixedTpRate = BigDecimal.valueOf(3500);
@@ -116,6 +119,7 @@ public class QuoteService {
         proposalRepository.save(proposal);
 
         quoteRepository.save(quote);
+        log.info("Quote generated successfully");
     }
 
     @Transactional
