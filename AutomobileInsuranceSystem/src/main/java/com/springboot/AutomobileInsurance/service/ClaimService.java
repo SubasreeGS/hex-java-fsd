@@ -43,14 +43,18 @@ public class ClaimService {
     public void fileClaim(ClaimFileRequestDto request) {
         //Fetch policy by its id
         Policy policy = policyRepository.findById(request.policyId())
-                .orElseThrow(() -> new ResourceNotFoundException("Policy not found"));
+                .orElseThrow(() -> {
+                    log.warn("Claim registration failed: Policy #{} not found", request.policyId());
+                    return new ResourceNotFoundException("Policy not found");
+                });
 
         LocalDate incidentDate = request.incidentDate();
 
         // Verify incident occurred within policy active coverage dates
         if (incidentDate.isBefore(policy.getStartDate()) || incidentDate.isAfter(policy.getEndDate())) {
+            log.warn("Claim filing rejected: Incident date {} is outside policy period ({} to {})",
+                    incidentDate, policy.getStartDate(), policy.getEndDate());
             throw new InvalidCallException("Incident date must fall within Policy coverage period");
-
         }
 
         // Build and save claim
@@ -67,51 +71,25 @@ public class ClaimService {
         log.info("Claim registered successfully with Claim Number: '{}'", claim.getClaimNo());
 
     }
-/*
-    @Transactional
-    public void reviewClaim(Long claimId, ClaimReviewRequestDto request) {
-
-        Claim claim = claimRepository.findById(claimId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
-
-
-        Officer officer = officerRepository.findById(request.officerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Officer not found"));
-
-        claim.setOfficer(officer);
-
-        if (request.status() == ClaimStatus.APPROVED)
-        {
-            claim.setApprovedAmount(request.approvedAmount().setScale(2, RoundingMode.HALF_UP));
-            claim.setStatus(ClaimStatus.APPROVED);
-        }
-        else if (request.status() == ClaimStatus.REJECTED)
-        {
-            claim.setApprovedAmount(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
-            claim.setStatus(ClaimStatus.REJECTED);
-        }
-        else
-        {
-            claim.setStatus(request.status());
-        }
-
-        claimRepository.save(claim);
-
-    }
-    
- */
-
 
     public ClaimResponseDto getById(Long id) {
+        log.debug("Fetching claim by id: {}", id);
         Claim claim = claimRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
+                .orElseThrow(() -> {
+                    log.warn("Claim #{} not found", id);
+                    return new ResourceNotFoundException("Claim not found");
+                });
         return ClaimMapper.convertEntityToDto(claim);
     }
 
 
     public ClaimResponseDto getByClaimNo(String claimNo) {
+        log.debug("Fetching claim by claim number: {}", claimNo);
         Claim claim = claimRepository.findByClaimNo(claimNo)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
+                .orElseThrow(() -> {
+                    log.warn("Claim number '{}' not found", claimNo);
+                    return new ResourceNotFoundException("Claim not found");
+                });
         return ClaimMapper.convertEntityToDto(claim);
     }
 
@@ -141,57 +119,24 @@ public class ClaimService {
     }
 
     public List<ClaimResponseDto> getClaimsByCustomerUsername(String username) {
+        log.debug("Fetching claims for customer: {}", username);
         return claimRepository.findClaimsByCustomerUsername(username);
     }
-    /*
+
     @Transactional
     public void assignInspector(Long inspectorId, Long claimId, String officerUsername) {
-        // 1. Fetch Claim
         Claim claim = claimRepository.findById(claimId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found with id: " + claimId));
-
-        // 2. Fetch Inspector
-        Inspector inspector = inspectorRepository.findById(inspectorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inspector not found with id: " + inspectorId));
-
-        // 3. Link the reviewing Officer
-        Officer officer = officerRepository.findByOfficerUsername(officerUsername);
-        if (officer == null) {
-            throw new ResourceNotFoundException("Officer record not found for username: " + officerUsername);
-        }
-        claim.setOfficer(officer);
-
-        // 4. Upsert ClaimAssessment (fetch existing or create new to avoid duplicate key exceptions)
-        ClaimAssessment assessment = claimAssessmentRepository.findByClaimId(claimId)
-                .orElseGet(ClaimAssessment::new);
-
-        assessment.setClaim(claim);
-        assessment.setInspector(inspector);
-
-        // Set initial status and cost if it's a new assessment
-        if (assessment.getStatus() == null) {
-            assessment.setStatus(AssessmentStatus.PENDING);
-        }
-        if (assessment.getEstimatedCost() == null) {
-            assessment.setEstimatedCost(BigDecimal.ZERO);
-        }
-
-        claimAssessmentRepository.save(assessment);
-
-        // 5. Transition claim status to UNDER_ASSESSMENT
-        claim.setStatus(ClaimStatus.UNDER_ASSESSMENT);
-        claimRepository.save(claim);
-    }
-
-     */
-
-    public void assignInspector(Long inspectorId, Long claimId, String officerUsername) {
-        Claim claim = claimRepository.findById(claimId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
+                .orElseThrow(() -> {
+                    log.warn("Claim assignment failed: Claim #{} not found", claimId);
+                    return new ResourceNotFoundException("Claim not found");
+                });
 
 
         Inspector inspector = inspectorRepository.findById(inspectorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Inspector not found"));
+                .orElseThrow(() -> {
+                    log.warn("Claim assignment failed: Inspector #{} not found", inspectorId);
+                    return new ResourceNotFoundException("Inspector not found");
+                });
 
         // link the reviewing officer to the claim
         Officer officer = officerRepository.findByOfficerUsername(officerUsername);
@@ -226,14 +171,14 @@ public class ClaimService {
 
         return new ClaimResponseV2PaginationDto(claimPage.getContent(), paginationDto);
     }
-
+    @Transactional
     public void reviewClaim(Long claimId, ClaimReviewRequestDto request) {
         log.info("officer is reviewing claim");
         Claim claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
 
 
-        // 3. Status-Specific Validation & Processing
+        // Status-Specific Validation & Processing
         if (request.status() == ClaimStatus.APPROVED)
         {
             claim.setApprovedAmount(request.approvedAmount().setScale(2, RoundingMode.HALF_UP));
@@ -251,6 +196,7 @@ public class ClaimService {
 
 
 //claim process settlement
+@Transactional
     public void processSettlement(Long claimId) {
         log.info("Officer processing disbursement for Claim ID: {}", claimId);
         Claim claim = claimRepository.findById(claimId)

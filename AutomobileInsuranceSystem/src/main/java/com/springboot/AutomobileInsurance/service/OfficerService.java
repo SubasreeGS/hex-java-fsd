@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.*;
 import java.util.List;
@@ -35,6 +37,7 @@ public class OfficerService {
     private final PasswordEncoder passwordEncoder;
     private final Logger log = LoggerFactory.getLogger(OfficerService.class);
 
+    @Transactional
     public void insertOfficer(OfficerDto dto) {
         //  Check if username already exists in user db
         log.info("Attempting to onboard new Officer with username: '{}'", dto.username());
@@ -64,6 +67,7 @@ public class OfficerService {
     }
 
     public OfficerAnalyticsDto getOfficerAnalytics() {
+        log.debug("Compiling underwriting metrics and settlement payout analytics for officer dashboard");
         List<StatDto> claimsStats = claimRepository.getClaimsCountByStatus();
         List<StatDto> proposalStats = proposalRepository.getProposalsCountByStatus();
         Double totalPayout = claimRepository.getTotalSettledPayout();
@@ -71,13 +75,12 @@ public class OfficerService {
         return new OfficerAnalyticsDto(claimsStats, proposalStats, totalPayout);
     }
 
-
-
     public ClaimFilterDto filterClaims(ClaimStatus status, LocalDate fromDate, LocalDate toDate, Integer page, Integer size) {
         int pageNo = (page == null || page < 0) ? 0 : page;
         int pageSize = (size == null || size < 1) ? 10 : size;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        log.debug("Filtering claims: status={}, fromDate={}, toDate={}, page={}, size={}", status, fromDate, toDate, page, size);
         Instant fromInstant = (fromDate == null) ? null : fromDate.atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant toInstant = (toDate == null) ? null : toDate.atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC).toInstant();
 
@@ -101,6 +104,7 @@ public class OfficerService {
             Integer page,
             Integer size
     ) {
+        log.debug("Filtering proposals: policyType={}, status={}, fromDate={}, toDate={}, page={}, size={}", policyType, status, fromDate, toDate, page, size);
         int pageNo = (page == null || page < 0) ? 0 : page;
         int pageSize = (size == null || size < 1) ? 10 : size;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
@@ -129,7 +133,7 @@ public class OfficerService {
         log.info("Fetching officer directory - Page: {}, Size: {}", page, size);
         int pageNo = Math.max(page, 0);
         int pageSize = (size < 1) ? 5 : size;
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
 
         Page<Officer> officerPage = officerRepository.findAll(pageable);
 
@@ -147,45 +151,4 @@ public class OfficerService {
         return new OfficerPaginationDto(dtoList, paginationDto);
     }
 
-
-
-/*
-    public OfficerResponseDto getById(long id) {
-        Officer officer = officerRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Invalid officer id"));
-
-        return OfficerMapper.convertEntityToDto(officer);
-    }
-
-    public List<OfficerResponseDto> getAll() {
-        return officerRepository.findAll()
-                .stream()
-                .map(OfficerMapper::convertEntityToDto)
-                .toList();
-    }
-
-    public void deleteById(long id) {
-        getById(id);
-        officerRepository.deleteById(id);
-    }
-
-    public void update(Long id, OfficerUpdateDto dto) {
-        Officer officer = officerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Invalid officer id"));
-
-        boolean flag = false;
-
-        if (dto.name() != null && !dto.name().trim().isEmpty()) {
-            officer.setName(dto.name());
-            flag = true;
-        }
-
-        if (!flag) {
-            throw new InvalidCallException("Update op terminated");
-        }
-
-        officerRepository.save(officer);
-    }
-
- */
 }

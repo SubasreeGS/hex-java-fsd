@@ -34,13 +34,12 @@ public class ProposalController {
         proposalService.assignInspector(inspectorId, proposalId,principal.getName());
     }
 
-    //officer approves recommended idv-------------
+    //officer approves recommended idv
     @PutMapping("/api/proposal/approve-idv/{proposalId}")
     public void approveIdv(@PathVariable Long proposalId,
                            @Valid @RequestBody ApproveIdvDto dto,Principal principal) {
         proposalService.approveIdv(proposalId, dto,principal.getName());
     }
-
 
     //get proposal by customer id (v1)
     @GetMapping("/api/proposal/customer/v1/{customerId}")
@@ -90,22 +89,12 @@ public class ProposalController {
     {
         return proposalService.getByProposalStatus(status, page, size, principal.getName());
     }
-/*
-    @GetMapping("/api/proposal/officer/{officerId}")
-    public List<ProposalResponseDto> getByOfficerId(@PathVariable long officerId) {
-        return proposalService.getByOfficerId(officerId);
+    // Officer rejects proposal with remarks
+    @PutMapping("/api/proposal/reject/{proposalId}")
+    public void rejectProposal(@PathVariable Long proposalId,
+                               @Valid @RequestBody ProposalRejectDto dto,
+                               Principal principal) {
+        proposalService.rejectProposal(proposalId, dto, principal.getName());
     }
 
-    @GetMapping("/api/proposal/v1/{id}")
-    public ProposalResponseDto getById(@PathVariable Long id) {
-        return proposalService.getById(id);
-    }
-
-
-    @GetMapping("/api/proposal/all")
-    public List<ProposalResponseDto> getAll() {
-        return proposalService.getAll();
-    }
-
- */
 }

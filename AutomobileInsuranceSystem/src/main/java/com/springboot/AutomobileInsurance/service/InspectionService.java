@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,6 +32,7 @@ public class InspectionService {
     private final Logger log = LoggerFactory.getLogger(InspectionService.class);
 
     //inspector submits inspection records
+    @Transactional
     public void submitReport(Long proposalId, SubmitInspectionReportDto dto) {
         //Fetch Inspection entity from db by proposal id
         Inspection inspection = inspectionRepository.findByProposalId(proposalId)
@@ -42,15 +44,18 @@ public class InspectionService {
         //based on result of inspection, set recommended idv and update status of proposal
         if (dto.result() == InspectionResult.PASSED)
         {
-            proposal.setStatus(ProposalStatus.INSPECTION_COMPLETED);
+
             inspection.setRecommendedIdv(dto.recommendedIdv());
+            log.info("Inspection PASSED for Proposal #{}. Recommended IDV: ₹{}", proposalId, dto.recommendedIdv());
         }
         else
         {
             proposal.setStatus(ProposalStatus.REJECTED);
             inspection.setRecommendedIdv(BigDecimal.ZERO);
             inspection.setApprovedIdv(BigDecimal.ZERO);
+            log.info("Inspection FAILED for Proposal #{}. Reason/Notes: {}", proposalId, dto.inspectionNotes());
         }
+        proposal.setStatus(ProposalStatus.INSPECTION_COMPLETED);
 
         //set inspection result in record
         inspection.setResult(dto.result());
@@ -68,26 +73,27 @@ public class InspectionService {
         inspectionRepository.save(inspection);
         proposalRepository.save(proposal);
         log.info("Inspection ID report saved ");
-
-
     }
 
     //get inspection report by inspector username (v1)
     public List<InspectionResponseDto> getReportsByInspectorUsername(String inspectorUsername, int page, int size) {
+        log.debug("Fetching survey reports for inspector '{}' (page: {}, size: {})", inspectorUsername, page, size);
         Pageable pageable = PageRequest.of(page,size);
         return inspectionRepository.getReportsByInspectorUsername(inspectorUsername,pageable);
-
 
     }
 
     //get report by inspector username and status (v2)
     public List<InspectionResponseDto> getInspectionsByStatus(InspectionStatus status,String inspectorUsername) {
+
+        log.debug("Fetching inspections for inspector '{}' with status '{}'", inspectorUsername, status);
         return inspectionRepository.getInspectionsByStatus(status,inspectorUsername);
     }
 
 
     //officer gets report by proposal id (v1)
     public InspectionResponseDtoV2 getByProposalId(Long proposalId) {
+        log.debug("Fetching survey findings for Proposal #{}", proposalId);
         Inspection inspection = inspectionRepository.findByProposalId(proposalId)
                 .orElseThrow(() -> new ResourceNotFoundException("No inspection record found for proposal id: " + proposalId));
         return InspectionMapper.convertEntityToDto(inspection);
@@ -96,6 +102,7 @@ public class InspectionService {
 
     //officer gets report by inspector id (v2)
     public List<InspectionResponseDtoV2> getInspectionsByInspector(Long inspectorId) {
+        log.debug("Fetching all survey assignments for Inspector #{}", inspectorId);
         return inspectionRepository.findByInspectorId(inspectorId)
                 .stream()
                 .map(InspectionMapper::convertEntityToDto)

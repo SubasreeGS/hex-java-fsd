@@ -39,8 +39,6 @@ public class CustomerController {
         return customerService.getByCustomerUsername(principal.getName());
     }
 
-
-
     //get all customers as list of dto
     @GetMapping("/api/customer/all")
     public List<CustomerResponseDto> getAll() {

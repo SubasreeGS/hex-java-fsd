@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,6 +65,7 @@ public class ProposalService {
 
     }
 
+    @Transactional
     public void assignInspector(Long inspectorId, Long proposalId,String officerUsername) {
         //fetch officer entity
         Officer officer = officerRepository.findByOfficerUsername(officerUsername);
@@ -75,6 +77,8 @@ public class ProposalService {
 
         //check does this officer have authority to assign this inspector
         if (! (inspector.getOfficer().getUser().getUsername().equals(officerUsername))) {
+            log.warn("Unauthorized assignment: Officer '{}' attempted to assign Inspector #{} belonging to '{}'",
+                    officerUsername, inspectorId, inspector.getOfficer().getUser().getUsername());
             throw new InvalidCallException("Operation not allowed! contact admin");
         }
 
@@ -116,11 +120,14 @@ public class ProposalService {
 
         //verify whether the officer has permission to approve this idv
         if(! (inspection.getInspector().getOfficer().getUser().getUsername().equals(officerUsername))){
+            log.warn("Unauthorized IDV approval: Officer '{}' attempted to approve IDV for Proposal #{}",
+                    officerUsername, proposalId);
             throw new InvalidCallException("Operation not allowed! contact admin");
         }
 
         //check inspection status before approving
         if (inspection.getResult() != InspectionResult.PASSED) {
+            log.warn("Failed IDV approval: Proposal #{} has a failed inspection.", proposalId);
             throw new InvalidCallException("Cannot approve IDV for a failed inspection.");
         }
         //approve idv
@@ -135,10 +142,13 @@ public class ProposalService {
         proposal.setStatus(ProposalStatus.IDV_APPROVED);
         //save proposal in db
         proposalRepository.save(proposal);
+        log.info("IDV approved for Proposal #{}", proposalId);
+
     }
 
     //get proposal by customer id (V1)
     public List<ProposalInfoDto> getProposalByCustomerId(Long customerId,int page,int size) {
+        log.debug("Fetching proposals for Customer #{} (page: {}, size: {})", customerId, page, size);
         // Validate customerId
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer Id Invalid"));
@@ -156,7 +166,9 @@ public class ProposalService {
 
     // get proposal by Inspector username with pagination metadata
     public ProposalInfoPaginationDto getByInspectorUsername(int page, int size, String inspectorUsername) {
-        Pageable pageable = PageRequest.of(page, size);
+        log.debug("Fetching assigned proposals for surveyor '{}' (page: {}, size: {})", inspectorUsername, page, size);
+        Pageable pageable = PageRequest.of(page, size,Sort.by("id").descending());
+
         Page<ProposalInfoDtoV2> proposalPage = proposalRepository.getByInspectorUsername(inspectorUsername, pageable);
 
         PaginationDto paginationDto = new PaginationDto(
@@ -171,12 +183,14 @@ public class ProposalService {
 
     //get proposal by Officer username
     public List<ProposalInfoDtoV3> getByOfficerUsername(int page, int size, String officerUsername) {
+        log.debug("Fetching proposals for Officer '{}' (page: {}, size: {})", officerUsername, page, size);
         Pageable pageable = PageRequest.of(page,size);
         return proposalRepository.getByOfficerUsername(officerUsername,pageable);
     }
 
     public ProposalInfoV3PaginationDto getByProposalStatus(ProposalStatus status, int page, int size, String officerUsername) {
-        Pageable pageable = PageRequest.of(page, size);
+        log.debug("Fetching proposals by status '{}' for Officer '{}' (page: {}, size: {})", status, officerUsername, page, size);
+        Pageable pageable = PageRequest.of(page, size,Sort.by("id").descending());
         Page<ProposalInfoDtoV3> proposalPage = proposalRepository.getByProposalStatus(status, officerUsername, pageable);
 
         PaginationDto paginationDto = new PaginationDto(
@@ -189,14 +203,8 @@ public class ProposalService {
     }
 
 
-
-
-
-
-
-
-
     public ProposalResponseDto getById(Long id) {
+        log.debug("Fetching proposal by ID: {}", id);
         Proposal proposal = proposalRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Proposal not found"));
 
@@ -204,24 +212,36 @@ public class ProposalService {
     }
 
     public List<ProposalResponseDto> getAll() {
+        log.debug("Fetching all proposals");
         return proposalRepository.findAll()
                 .stream()
                 .map(ProposalMapper::convertEntityToDto)
                 .toList();
     }
 
-
-
-
-
-
     public List<ProposalResponseDto> getByOfficerId(long officerId) {
+        log.debug("Fetching proposals for Officer #{}", officerId);
         // Step 1: Query all proposals assigned to the specific officer
         return proposalRepository.findByOfficerId(officerId)
                 .stream()
                 .map(ProposalMapper::convertEntityToDto)
                 .toList();
     }
+    @Transactional
+    public void rejectProposal(Long proposalId, ProposalRejectDto dto, String officerUsername) {
+
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposal not found with id: " + proposalId));
+
+        proposal.setStatus(ProposalStatus.REJECTED);
+        proposal.setRejectionRemarks(dto.remarks());
+
+        proposalRepository.save(proposal);
+        log.info("Officer '{}' formally REJECTED Proposal #{} with remarks: '{}'",
+                officerUsername, proposalId, dto.remarks());
+    }
+
+
 
 
 

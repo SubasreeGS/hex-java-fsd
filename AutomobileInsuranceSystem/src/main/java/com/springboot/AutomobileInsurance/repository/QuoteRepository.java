@@ -12,11 +12,6 @@ import java.util.Optional;
 @Repository
 public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
-    Optional<Quote> findByProposalId(Long proposalId);
-
-    boolean existsByProposalId(Long proposalId);
-
-
     @Query("""
             SELECT new com.springboot.AutomobileInsurance.dto.response.QuoteResponseDto(
                 q.id,
@@ -45,31 +40,5 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
     """)
     QuoteResponseDto getByProposalId(Long proposalId);
 
-    @Query("""
-        SELECT new com.springboot.AutomobileInsurance.dto.response.QuoteResponseDto(
-                    q.id,
-                    p.id,
-                    p.status,
-                    cust.name,
-                    v.registrationNo,
-                    p.policyType,
-                    COALESCE(i.approvedIdv, java.math.BigDecimal.ZERO),
-                    q.tpPremium,
-                    q.odPremium,
-                    q.zeroDepPremium,
-                    q.engineProtectPremium,
-                    q.roadsideAssistPremium,
-                    q.netPremium,
-                    q.taxAmount,
-                    q.totalPremium,
-                    q.validUntil
-                )
-                FROM Quote q
-                JOIN q.proposal p
-                JOIN p.customer cust
-                JOIN p.vehicle v
-                LEFT JOIN Inspection i ON i.proposal.id = p.id
-                WHERE q.id = ?1
-    """)
-    Optional<QuoteResponseDto> getByQuoteId(Long quoteId);
+
 }

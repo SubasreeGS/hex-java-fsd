@@ -15,6 +15,7 @@ public record ProposalInfoDto(
         String inspectorContact,
         String registrationNo,
         String make,
-        String model
+        String model,
+        String rejectionRemarks
 ) {
 }

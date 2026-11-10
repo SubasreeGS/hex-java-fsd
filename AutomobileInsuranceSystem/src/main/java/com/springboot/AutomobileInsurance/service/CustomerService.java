@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +29,10 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final Logger log = LoggerFactory.getLogger(PolicyService.class);
+    private final Logger log = LoggerFactory.getLogger(CustomerService.class);
 
 //add new customer
+    @Transactional
     public void insertCustomer(CustomerDto dto) {
 
         //  Check if username already exists in user db
@@ -56,13 +58,17 @@ public class CustomerService {
     }
 //get customer by customer id
     public CustomerResponseDto getById(Long id) {
-       Customer customer = customerRepository.findById(id)
+
+        log.debug("Fetching customer by id: {}", id);
+        Customer customer = customerRepository.findById(id)
                .orElseThrow(()-> new ResourceNotFoundException("Invalid customer id"));
 
         return CustomerMapper.convertEntityToDto(customer);
     }
 
     public CustomerResponseDto getByCustomerUsername(String name) {
+
+        log.debug("Fetching profile for customer username: {}", name);
        Customer customer = customerRepository.getByCustomerUsername(name);
        return CustomerMapper.convertEntityToDto(customer);
 
@@ -70,6 +76,8 @@ public class CustomerService {
 
     //get all customers as list of dto
     public List<CustomerResponseDto> getAll() {
+        log.debug("Fetching all registered customers");
+
         return customerRepository.findAll()
                 .stream()
                 .map(CustomerMapper::convertEntityToDto)
@@ -79,9 +87,11 @@ public class CustomerService {
     public void deleteById(Long id) {
         getById(id);
         customerRepository.deleteById(id);
+        log.info("Customer deleted successfully");
     }
 
     //update customer by id
+    @Transactional
     public void update(Long id, CustomerUpdateDto dto) {
         //check customer id and get its object
         Customer customer = customerRepository.findById(id)
@@ -119,6 +129,7 @@ public class CustomerService {
     }
 
     // Update logged-in customer's profile
+    @Transactional
     public void updateByUsername(String username, CustomerUpdateDto dto) {
 
         Customer customer = customerRepository.getByCustomerUsername(username);

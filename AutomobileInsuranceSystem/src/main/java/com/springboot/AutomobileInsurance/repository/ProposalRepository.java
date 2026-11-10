@@ -17,14 +17,7 @@ import java.util.List;
 @Repository
 public interface ProposalRepository extends JpaRepository<Proposal, Long> {
 
-    List<Proposal> findByCustomerId(Long customerId);
-
     List<Proposal> findByOfficerId(Long officerId);
-
-    List<Proposal> findByStatus(ProposalStatus status);
-
-
-
 
     @Query("""
         SELECT new com.springboot.AutomobileInsurance.dto.response.ProposalInfoDto(
@@ -39,7 +32,8 @@ public interface ProposalRepository extends JpaRepository<Proposal, Long> {
             ins.contact,
             v.registrationNo,
             v.make,
-            v.model
+            v.model,
+            p.rejectionRemarks
         )
         FROM Proposal p
         JOIN p.vehicle v
@@ -62,7 +56,8 @@ SELECT new com.springboot.AutomobileInsurance.dto.response.ProposalInfoDto(
             ins.contact,
             v.registrationNo,
             v.make,
-            v.model
+            v.model,
+            p.rejectionRemarks
         )
         FROM Proposal p
         JOIN p.customer c
@@ -205,10 +200,6 @@ Page<ProposalInfoDtoV3> getByProposalStatus(ProposalStatus status, String office
             Instant toDate,
             Pageable pageable
     );
-
-
-    //boolean existsByVehicleIdAndStatusNotIn(Long vehicleId, List<ProposalStatus> statuses);
-
 
 
 }

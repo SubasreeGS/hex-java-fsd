@@ -61,15 +61,6 @@ public class ClaimController {
         claimService.reviewClaim(claimId, request);
     }
 
-    /*// Review / approve / reject claim by officer
-    @PutMapping("/api/claim/review/{claimId}")
-    public void reviewClaim(@PathVariable Long claimId, @Valid @RequestBody ClaimReviewRequestDto request) {
-         claimService.reviewClaim(claimId, request);
-    }
-
-     */
-
-
     // Get claim by ID
     @GetMapping("/api/claim/id/v1/{id}")
     public ClaimResponseDto getById(@PathVariable Long id) {
@@ -87,9 +78,6 @@ public class ClaimController {
     public List<ClaimResponseDto> getByPolicyId(@PathVariable Long policyId) {
         return claimService.getByPolicyId(policyId);
     }
-
-
-
 
     // Get all claims
     @GetMapping("/api/claim/all")

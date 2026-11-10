@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 
 public class MyUserDetailsService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final Logger log = LoggerFactory.getLogger(ClaimService.class);
+    private final Logger log = LoggerFactory.getLogger(MyUserDetailsService.class);
 
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
+
+        log.debug("Fetching user details for username: {}", username);
         return userRepository.loadUserByUsername(username);
 
     }

@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,12 +85,13 @@ public class InspectorService {
     }
 
     public List<InspectorDropdownDto> getAllInspectorsForDropdown() {
-        return inspectorRepository.findAllForDropdown();
+        log.debug("Fetching all inspectors for global dropdown list");
+       return inspectorRepository.findAllForDropdown();
     }
 
 
     public InspectorResponseDto getById(long id) {
-
+        log.debug("Fetching inspector by id: {}", id);
         Inspector inspector = inspectorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Inspector not found"));
         return InspectorMapper.convertEntityToDto(inspector);
@@ -117,10 +119,15 @@ public class InspectorService {
         }
 
         if (!updated) {
+            log.warn("Inspector update terminated: No valid fields provided for update on Inspector #{}", id);
             throw new InvalidCallException("No valid fields provided for update.");
         }
 
         Inspector savedInspector = inspectorRepository.save(inspector);
+
+        log.info("Inspector profile #{} updated successfully (Name: '{}', Email: '{}')",
+                id, savedInspector.getName(), savedInspector.getEmail());
+
         return InspectorMapper.convertEntityToDto(savedInspector);
     }
 
@@ -142,16 +149,14 @@ public class InspectorService {
         }
     }
 
-
-
-
     public List<InspectorResponseDto> getAll() {
+
+        log.debug("Fetching all registered inspectors");
         return inspectorRepository.findAll()
                 .stream()
                 .map(InspectorMapper::convertEntityToDto)
                 .toList();
     }
-
 
     public InspectorProposalFilterDto filterInspectorProposals(
             Long inspectorId,
@@ -165,6 +170,9 @@ public class InspectorService {
         int pageNo = (page == null || page < 0) ? 0 : page;
         int pageSize = (size == null || size < 1) ? 10 : size;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        log.debug("Filtering proposals for Inspector #{}: status={}, policyType={}, page={}, size={}",
+                inspectorId, status, policyType, pageNo, pageSize);
 
         Instant fromInstant = (fromDate == null) ? null : fromDate.atStartOfDay(ZoneOffset.UTC).toInstant();
         Instant toInstant = (toDate == null) ? null : toDate.atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC).toInstant();
@@ -199,6 +207,8 @@ public class InspectorService {
         int pageSize = (size == null || size < 1) ? 10 : size;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
+        log.debug("Filtering claims for Inspector: status={}, page={}, size={}", status, pageNo, pageSize);
+
         Page<InspectorClaimRespDto> pageDto = claimRepository.dynamicFilterInspectorClaims(
                 status,
                 fromDate,
@@ -217,6 +227,8 @@ public class InspectorService {
     }
 
     public InspectorMetricsDto getInspectorMetrics(Long inspectorId) {
+        log.debug("Fetching metrics for Inspector #{}", inspectorId);
+
         long pendingVehicleSurveys = inspectionRepository.countPendingSurveysByInspector(inspectorId);
         long completedSurveys = inspectionRepository.countCompletedSurveysByInspector(inspectorId);
         long pendingClaimSurveys = claimRepository.countPendingClaimAssessments();
@@ -227,6 +239,7 @@ public class InspectorService {
 
     // In InspectorService.java
     public InspectorResponseDto getByUsername(String username) {
+        log.debug("Fetching inspector details for username: {}", username);
         Inspector inspector = inspectorRepository.findByUserUsername(username)
                 .orElseThrow(() -> new RuntimeException("Inspector not found for logged-in user: " + username));
         return InspectorMapper.convertEntityToDto(inspector);
@@ -236,7 +249,8 @@ public class InspectorService {
     public InspectorPaginationDto getInspectorsWithPagination(int page, int size) {
         int pageNo = Math.max(page, 0);
         int pageSize = (size < 1) ? 5 : size;
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("id").descending());
+        log.debug("Fetching inspectors with pagination: page={}, size={}", pageNo, pageSize);
 
         Page<Inspector> inspectorPage = inspectorRepository.findAll(pageable);
 
@@ -255,6 +269,7 @@ public class InspectorService {
     }
 
     public List<InspectorDropdownDto> getMyInspectorsForDropdown(String officerUsername) {
+        log.debug("Fetching my inspectors for dropdown: officerUsername={}", officerUsername);
         return inspectorRepository.findMyInspectorsForDropdown(officerUsername);
     }
 }

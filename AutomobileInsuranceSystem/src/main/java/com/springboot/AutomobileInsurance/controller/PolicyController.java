@@ -17,8 +17,6 @@ public class PolicyController {
 
     private final PolicyService policyService;
 
-
-
     //get policy by policy number
     @GetMapping("/api/policy/number/v1/{policyNumber}")
     public PolicyResponseDto getByPolicyNumber(@PathVariable String policyNumber) {
@@ -42,8 +40,6 @@ public class PolicyController {
     public List<PolicyResponseDtoV2> getMyPolicies(Principal principal) {
         return policyService.getMyPolicyCards(principal.getName());
     }
-
-
 
     //get all policies
     @GetMapping("/api/policy/all")

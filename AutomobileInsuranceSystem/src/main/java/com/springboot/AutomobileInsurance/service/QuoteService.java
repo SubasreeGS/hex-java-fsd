@@ -30,7 +30,7 @@ public class QuoteService {
     private final QuoteRepository quoteRepository;
     private final ProposalRepository proposalRepository;
     private final InspectionRepository inspectionRepository;
-    private final Logger log = LoggerFactory.getLogger(PolicyService.class);
+    private final Logger log = LoggerFactory.getLogger(QuoteService.class);
 
     // Standard insurance premium rates
     private final BigDecimal fixedTpRate = BigDecimal.valueOf(3500);
@@ -43,6 +43,7 @@ public class QuoteService {
     @Transactional
     public void generateQuote(Long proposalId)
     {
+        log.debug("Generating quote for Proposal #{}", proposalId);
         // Fetch Proposal object from DB using proposal id
         Proposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal not found with id: " + proposalId));
@@ -86,6 +87,7 @@ public class QuoteService {
             if (proposal.isRoadsideAssist()) {
                 roadsideAssistPremium = roadsideAssistFlat;
             }
+            log.debug("Calculated premiums for Proposal #{}: TP={}, OD={}, ZeroDep={}, EngineProtect={}, RoadsideAssist={}", proposalId, tpPremium, odPremium, zeroDepPremium, engineProtectPremium, roadsideAssistPremium);
         }
 
         // Sum all individual covers to get net premium before taxes
@@ -124,6 +126,7 @@ public class QuoteService {
 
     @Transactional
     public QuoteResponseDto getByProposalId(Long proposalId) {
+        log.debug("Fetching quote for Proposal #{}", proposalId);
         Proposal proposal=proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal not found"));
 

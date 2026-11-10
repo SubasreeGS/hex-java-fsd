@@ -28,7 +28,6 @@ public class OfficerController {
 
         officerService.insertOfficer(officerDto);
     }
-// Existing officer endpoints (e.g. approve, reject, details)...
 
     @GetMapping("/api/officer/analytics")
     public OfficerAnalyticsDto getOfficerAnalytics() {
@@ -65,31 +64,4 @@ public class OfficerController {
         return officerService.getOfficersWithPagination(page, size);
     }
 
-
-/*
-    @GetMapping("/api/officer/{id}")
-    public OfficerResponseDto getById(@PathVariable long id) {
-
-        return officerService.getById(id);
-    }
-
-    @GetMapping("/api/officer/all")
-    public List<OfficerResponseDto> getAll() {
-
-        return officerService.getAll();
-    }
-
-    @DeleteMapping("/api/officer/{id}")
-    public void deleteById(@PathVariable long id) {
-
-        officerService.deleteById(id);
-    }
-
-    @PutMapping("/api/officer/{id}")
-    public void update(@PathVariable Long id, @RequestBody OfficerUpdateDto dto) {
-
-        officerService.update(id, dto);
-    }
-
- */
 }

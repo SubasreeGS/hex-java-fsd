@@ -91,6 +91,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/api/proposal/inspector").hasAuthority("INSPECTOR")
                         .requestMatchers(HttpMethod.GET,"/api/proposal/officer").hasAuthority("OFFICER")
                         .requestMatchers(HttpMethod.GET,"/api/proposal/status/{status}").hasAuthority("OFFICER")
+                        .requestMatchers(HttpMethod.GET,"/api/proposal/reject/{proposalId}").hasAuthority("OFFICER")
+
+
+
 
                         //Inspection
                         .requestMatchers(HttpMethod.PUT,"/api/inspection/submit/{proposalId}").hasAuthority("INSPECTOR")

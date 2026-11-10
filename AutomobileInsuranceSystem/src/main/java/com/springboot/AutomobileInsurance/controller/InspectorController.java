@@ -23,32 +23,30 @@ import java.util.List;
 public class InspectorController {
 
     private final InspectorService inspectorService;
-    //  CREATE: Returns created InspectorResponseDto with generated ID for Redux
+    // Returns created InspectorResponseDto with generated ID for Redux
     @PostMapping("/api/inspector/add")
 
     public InspectorResponseDto insertInspector(@Valid @RequestBody InspectorDto inspectorDto, Principal principal) {
         return inspectorService.insertInspector(inspectorDto, principal.getName());
     }
 
-    //  READ ONE: Get inspector by ID
+    //  Get inspector by ID
     @GetMapping("/api/inspector/{id}")
     public InspectorResponseDto getById(@PathVariable long id) {
         return inspectorService.getById(id);
     }
 
-    // UPDATE: Updates inspector profile (name, email, contact)
+    // Updates inspector profile (name, email, contact)
     @PutMapping("/api/inspector/{id}")
     public InspectorResponseDto update(@PathVariable Long id, @Valid @RequestBody InspectorUpdateDto dto) {
         return inspectorService.update(id, dto);
     }
 
-    //  DELETE: Deletes inspector and linked login user
+    // Deletes inspector and linked login user
     @DeleteMapping("/api/inspector/{id}")
     public void deleteById(@PathVariable long id) {
         inspectorService.deleteById(id);
     }
-
-
 
     @GetMapping("/api/inspector/all")
     public List<InspectorResponseDto> getAll() {
@@ -103,12 +101,11 @@ public class InspectorController {
     public InspectorMetricsDto getInspectorMetrics(@PathVariable("inspectorId") Long inspectorId) {
         return inspectorService.getInspectorMetrics(inspectorId);
     }
-    // In InspectorController.java
+
     @GetMapping("/api/inspector/profile/me")
     public InspectorResponseDto getLoggedInInspector(Principal principal) {
         return inspectorService.getByUsername(principal.getName());
     }
-
 
     @GetMapping("/api/inspector/paginated")
     public InspectorPaginationDto getInspectorsPaginated(

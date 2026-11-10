@@ -21,14 +21,6 @@ import java.util.List;
 public class ClaimAssessmentController {
 
     private final ClaimAssessmentService assessmentService;
-/*
-    // Create assessment
-    @PostMapping("/api/assessment/create")
-    public void createAssessment(@Valid @RequestBody ClaimAssessmentRequestDto request) {
-        assessmentService.createAssessment(request);
-    }
-
- */
 
     @GetMapping("/api/assessment/inspector/my-tasks")
     public InspectorTaskPaginationDto getMyTasks(
@@ -45,22 +37,6 @@ public class ClaimAssessmentController {
             Principal principal) {
         assessmentService.submitSurveyReport(id, dto, principal.getName());
     }
-
-
-
-
-
-
-    /*
-    // Update assessment
-    @PutMapping("/api/assessment/update/{id}")
-    public void updateAssessment(@PathVariable Long id, @Valid @RequestBody ClaimAssessmentRequestDto request) {
-        assessmentService.updateAssessment(id, request);
-    }
-
-     */
-
-
 
 
     // Get assessment by ID

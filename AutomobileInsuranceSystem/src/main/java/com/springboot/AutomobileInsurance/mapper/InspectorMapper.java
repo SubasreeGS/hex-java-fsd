@@ -26,20 +26,4 @@ public class InspectorMapper {
 
     }
 
-   
-    
-    
-
-
-/*
-    public static InspectorResponseDto convertEntityToDto(Inspector inspector) {
-        return new InspectorResponseDto(
-                inspector.getId(),
-                inspector.getName(),
-                inspector.getUser().getId(),
-                inspector.getUser().getUsername()
-        );
-    }
-
- */
 }

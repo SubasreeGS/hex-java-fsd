@@ -44,6 +44,9 @@ public class Proposal {
     @Column(name = "created_at", updatable = false)
     private Instant createdAt;
 
+    @Column(name = "rejection_remarks", length = 1000)
+    private String rejectionRemarks;
+
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;

@@ -57,12 +57,3 @@ public class InspectionController {
 
 
 }
-/*
-Inspector - submit inspection report
-inspector view report
-    by username
-    by username and status
-officer view report
-    by proposal id
-    by inspectorid
- */

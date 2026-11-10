@@ -1,5 +1,6 @@
 package com.springboot.AutomobileInsurance.service;
 
+import com.springboot.AutomobileInsurance.config.GlobalExceptionHandler;
 import com.springboot.AutomobileInsurance.dto.request.ClaimAssessmentRequestDto;
 import com.springboot.AutomobileInsurance.dto.request.SubmitAssessmentReportDto;
 import com.springboot.AutomobileInsurance.dto.response.ClaimAssessmentResponseDto;
@@ -19,6 +20,8 @@ import com.springboot.AutomobileInsurance.repository.ClaimRepository;
 import com.springboot.AutomobileInsurance.repository.InspectorRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,38 +37,16 @@ public class ClaimAssessmentService {
 
     private final ClaimAssessmentRepository claimAssessmentRepository;
     private final ClaimRepository claimRepository;
+    Logger log = LoggerFactory.getLogger(ClaimAssessmentService.class);
     private final InspectorRepository inspectorRepository;
-
-
-    /*
-    public void createAssessment(ClaimAssessmentRequestDto request) {
-
-
-
-        Claim claim = claimRepository.findById(request.claimId())
-                .orElseThrow(() -> new ResourceNotFoundException("Claim not found"));
-
-        Inspector inspector = inspectorRepository.findById(request.inspectorId())
-                .orElseThrow(() -> new ResourceNotFoundException("Inspector not found"));
-
-        ClaimAssessment assessment = new ClaimAssessment();
-        assessment.setClaim(claim);
-        assessment.setInspector(inspector);
-        assessment.setEstimatedCost(request.estimatedCost().setScale(2, RoundingMode.HALF_UP));
-        assessment.setDamagePhotosUrl(request.damagePhotosUrl());
-        assessment.setAssessmentNotes(request.assessmentNotes());
-        assessment.setStatus(request.status() != null ? request.status() : AssessmentStatus.PENDING);
-
-        claimAssessmentRepository.save(assessment);
-
-    }
-
-     */
 
     @Transactional
     public void updateAssessment(Long id, ClaimAssessmentRequestDto request) {
         ClaimAssessment assessment = claimAssessmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim assessment not found"));
+                .orElseThrow(() -> {
+                    log.warn("Assessment update failed: Assessment #{} not found", id);
+                    return new ResourceNotFoundException("Claim assessment not found");
+                });
         boolean flag = false;
 
         if (request.estimatedCost() != null) {
@@ -87,29 +68,40 @@ public class ClaimAssessmentService {
 
         if(!flag)
         {
+            log.warn("Update assessment operation rejected: No valid fields provided for Assessment #{}", id);
             throw new InvalidCallException("Update Operation terminated");
         }
 
         claimAssessmentRepository.save(assessment);
-
+        log.info("Claim Assessment #{} updated successfully", id);
     }
 
 
     public ClaimAssessmentResponseDto getById(Long id) {
+        log.debug("Fetching claim assessment by id: {}", id);
+
         ClaimAssessment assessment = claimAssessmentRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim assessment not found"));
+                .orElseThrow(() -> {
+                    log.warn("Claim assessment #{} not found", id);
+                    return new ResourceNotFoundException("Claim assessment not found");
+                });
         return ClaimAssessmentMapper.convertEntityToDto(assessment);
     }
 
 
     public ClaimAssessmentResponseDto getByClaimId(Long claimId) {
+        log.debug("Fetching claim assessment for Claim #{}", claimId);
         ClaimAssessment assessment = claimAssessmentRepository.findByClaimId(claimId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim assessment not found"));
+                .orElseThrow(() -> {
+                    log.warn("Claim assessment for Claim #{} not found", claimId);
+                    return new ResourceNotFoundException("Claim assessment not found");
+                });
         return ClaimAssessmentMapper.convertEntityToDto(assessment);
     }
 
 
     public List<ClaimAssessmentResponseDto> getByInspectorId(Long inspectorId) {
+        log.debug("Fetching assessments for Inspector #{}", inspectorId);
         return claimAssessmentRepository.findByInspectorId(inspectorId)
                 .stream()
                 .map(ClaimAssessmentMapper::convertEntityToDto)
@@ -118,6 +110,8 @@ public class ClaimAssessmentService {
 
 
     public List<ClaimAssessmentResponseDto> getAll() {
+
+        log.debug("Fetching all claim assessments");
         return claimAssessmentRepository.findAll()
                 .stream()
                 .map(ClaimAssessmentMapper::convertEntityToDto)
@@ -125,6 +119,8 @@ public class ClaimAssessmentService {
     }
 
     public InspectorTaskPaginationDto getMyTasks(String username, int page, int size) {
+
+        log.debug("Fetching task page {} (size {}) for surveyor: {}", page, size, username);
         Pageable pageable = PageRequest.of(page, size);
         Page<InspectorTaskResponseDto> taskPage = claimAssessmentRepository.findTasksByInspectorUsername(username, pageable);
 
@@ -138,17 +134,20 @@ public class ClaimAssessmentService {
     }
 
     //inspector submits the assessment report
+    @Transactional
     public void submitSurveyReport(Long assessmentId, SubmitAssessmentReportDto dto, String inspectorUsername) {
         // 1. Fetch Assessment record
         ClaimAssessment assessment = claimAssessmentRepository.findById(assessmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Claim assessment record not found"));
+                .orElseThrow(() -> {
+                    log.warn("Survey report submission failed: Assessment #{} not found", assessmentId);
+                    return new ResourceNotFoundException("Claim assessment record not found");
+                });
 
         // 2. Ownership Verification: Ensure logged-in inspector is assigned to this survey
         if (!assessment.getInspector().getUser().getUsername().equals(inspectorUsername)) {
+            log.warn("Survey report submission failed: Inspector #{} is not assigned to Assessment #{}", inspectorUsername, assessmentId);
             throw new InvalidCallException("Access denied: You are not assigned to this claim assessment.");
         }
-
-
 
         // 3. Update surveyor findings
         assessment.setEstimatedCost(dto.estimatedCost().setScale(2, RoundingMode.HALF_UP));
@@ -158,6 +157,7 @@ public class ClaimAssessmentService {
 
         claimAssessmentRepository.save(assessment);
 
+        log.debug("Survey report submitted for Assessment #{}", assessmentId);
         // 4.update the status of the claim
         Claim claim = assessment.getClaim();
 
@@ -165,7 +165,6 @@ public class ClaimAssessmentService {
             claimRepository.save(claim);
 
     }
-
 
 
 }

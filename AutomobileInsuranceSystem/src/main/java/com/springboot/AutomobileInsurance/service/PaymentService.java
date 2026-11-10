@@ -16,7 +16,10 @@ import com.springboot.AutomobileInsurance.repository.PolicyRepository;
 import com.springboot.AutomobileInsurance.repository.ProposalRepository;
 import com.springboot.AutomobileInsurance.repository.QuoteRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,8 +33,12 @@ public class PaymentService {
     private final QuoteRepository quoteRepository;
     private final ProposalRepository proposalRepository;
     private final PolicyRepository policyRepository;
+    private final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
+    @Transactional
     public void processPayment(Long quoteId, ProcessPaymentDto dto) {
+        log.debug("Processing payment for quote ID: {}", quoteId);
+
         // Fetch and validate quote
         Quote quote = quoteRepository.findById(quoteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Quote not found"));
@@ -42,6 +49,7 @@ public class PaymentService {
         }
 
         Proposal proposal = quote.getProposal();
+        log.debug("Processing payment for proposal ID: {}", proposal.getId());
 
         // Save Payment entity
         Payment payment = new Payment();
@@ -69,17 +77,18 @@ public class PaymentService {
         // Update Proposal status to POLICY_ISSUED
         proposal.setStatus(ProposalStatus.POLICY_ISSUED);
         proposalRepository.save(proposal);
+        log.info("Payment successful (TxnRef: '{}', Amount: ₹{}). Policy '{}' issued for Proposal #{}. Coverage: {} to {}",
+                savedPayment.getTransactionRef(), savedPayment.getAmount(), savedPolicy.getPolicyNumber(),
+                proposal.getId(), startDate, endDate);
 
     }
 
     public PaymentReceiptDto getReceiptByPaymentId(Long paymentId) {
+        log.debug("Fetching payment receipt for Payment #{}", paymentId);
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment record not found"));
 
         return paymentRepository.getReceiptByPaymentId(paymentId);
     }
-
-
-
 
 }

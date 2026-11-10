@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 
 public record ClaimReviewRequestDto(
 
-
         @NotNull(message = "Status is mandatory (APPROVED or REJECTED)")
         ClaimStatus status,
 

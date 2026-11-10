@@ -32,6 +32,7 @@ public class PolicyService {
 
     //get policy by policy number
     public PolicyResponseDto getByPolicyNumber(String policyNumber) {
+        log.debug("Fetching policy by policy number: {}", policyNumber);
         Policy policy = policyRepository.findByPolicyNumber(policyNumber)
                 .orElseThrow(() -> new ResourceNotFoundException("Policy not found"));
         return policyRepository.getByPolicyNumber(policyNumber);
@@ -40,14 +41,17 @@ public class PolicyService {
 
     //get by quote id
     public PolicyResponseDto getByQuoteId(Long quoteId) {
+        log.debug("Fetching policy by quote ID: {}", quoteId);
         Quote quote = quoteRepository.findById(quoteId)
                 .orElseThrow(()-> new ResourceNotFoundException("Quote not found"));
 
         return policyRepository.getByQuoteId(quoteId);
+
     }
 
     //get by proposal id
     public PolicyResponseDto getByProposalId(Long proposalId) {
+        log.debug("Fetching policy by proposal ID: {}", proposalId);
         //validate the proposal id
         Proposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal id not found"));
@@ -56,11 +60,13 @@ public class PolicyService {
 
     // get all proposals
     public List<PolicyResponseDto> getAll() {
+        log.debug("Fetching all policies");
         return policyRepository.findAllPolicyDto();
     }
 
 
     public List<PolicyResponseDtoV2> getMyPolicyCards(String name) {
+        log.debug("Fetching policy cards for customer: {}", name);
         return policyRepository.findCustomerPolicyByUsername(name);
 
     }
@@ -69,6 +75,7 @@ public class PolicyService {
         int pageNo = Math.max(page, 0);
         int pageSize = (size < 1) ? 5 : size;
         Pageable pageable = PageRequest.of(pageNo, pageSize);
+        log.debug("Fetching paginated policies: page={}, size={}", pageNo, pageSize);
 
         Page<PolicyResponseDto> policyPage = policyRepository.findAllPoliciesPaginated(pageable);
 
