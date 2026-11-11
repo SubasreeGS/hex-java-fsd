@@ -28,8 +28,6 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
-		<sonar.organization>subasreegs</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -83,6 +81,15 @@
 			<artifactId>jaxb-runtime</artifactId>
 			<version>4.0.5</version>
 		</dependency>
+
+		<!-- Source: https://mvnrepository.com/artifact/com.h2database/h2 -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.4.240</version>
+			<scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -97,6 +104,7 @@
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>5.8.0.7211</version>
 			</plugin>
+
 
 		</plugins>
 	</build>
