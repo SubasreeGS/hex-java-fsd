@@ -1,0 +1,506 @@
+/* ==========================================================================
+   AutoSure — Customer Sign Up
+   Same theme as the login page (navy + electric blue, glass card).
+   Sections: 1 Tokens · 2 Page · 3 Card · 4 Alert · 5 Form sections
+             6 Fields · 7 Button · 8 Links/Footer · 9 Responsive · 10 Motion
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
+
+/* 1. Tokens ---------------------------------------------------------------- */
+.su-page {
+    --su-navy: #0F172A;
+    --su-navy-deep: #0A1020;
+    --su-blue-600: #2563EB;
+    --su-blue-500: #3B82F6;
+    --su-blue-400: #60A5FA;
+    --su-blue-200: #BFDBFE;
+    --su-text: #E2E8F0;
+    --su-muted: #94A3B8;
+    --su-danger: #F87171;
+    --su-glass: rgba(15, 23, 42, 0.68);
+    --su-border: rgba(96, 165, 250, 0.24);
+    --su-radius-card: 24px;
+    --su-radius-field: 12px;
+    --su-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 2. Page ------------------------------------------------------------------ */
+.su-page {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 48px 20px 64px;
+    overflow-x: hidden;
+    font-family: 'Sora', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--su-text);
+    background:
+        radial-gradient(900px 560px at 15% 0%, rgba(37, 99, 235, 0.36), transparent 62%),
+        radial-gradient(780px 520px at 100% 100%, rgba(59, 130, 246, 0.24), transparent 60%),
+        linear-gradient(180deg, var(--su-navy) 0%, var(--su-navy-deep) 100%);
+    background-attachment: fixed;
+}
+
+/* grid texture */
+.su-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background-image:
+        linear-gradient(rgba(96, 165, 250, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96, 165, 250, 0.06) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 35%, #000 15%, transparent 75%);
+            mask-image: radial-gradient(ellipse at 50% 35%, #000 15%, transparent 75%);
+    pointer-events: none;
+}
+
+/* faint car silhouette pinned to the bottom of the viewport */
+.su-page::after {
+    content: "";
+    position: fixed;
+    left: 50%;
+    bottom: 12px;
+    z-index: -1;
+    width: min(760px, 92vw);
+    aspect-ratio: 3 / 1;
+    transform: translateX(-50%);
+    pointer-events: none;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200' fill='none' stroke='%2360A5FA' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M24 150h28c4-30 26-48 62-54l58-8 46-38c14-12 32-18 56-18h92c28 0 46 10 64 30l36 30c34 6 50 22 56 58h-24'/><path d='M228 50l-26 40h132V44h-70c-14 0-26 2-36 6z'/><path d='M350 44v46h98l-30-34c-12-10-26-12-40-12z'/><path d='M206 150h196'/><circle cx='150' cy='150' r='30'/><circle cx='150' cy='150' r='11'/><circle cx='462' cy='150' r='30'/><circle cx='462' cy='150' r='11'/></svg>") center bottom / contain no-repeat;
+    opacity: 0.13;
+    filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.5));
+}
+
+.su-wrap {
+    width: 100%;
+    max-width: 720px;
+}
+
+/* 3. Card ------------------------------------------------------------------ */
+.su-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--su-radius-card);
+    background: var(--su-glass);
+    border: 1px solid var(--su-border);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+            backdrop-filter: blur(18px) saturate(140%);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 30px 60px -20px rgba(2, 6, 23, 0.85),
+        0 0 80px -30px rgba(37, 99, 235, 0.55);
+    animation: su-card-in 0.7s var(--su-ease) both;
+}
+
+.su-card__bar {
+    height: 4px;
+    background: linear-gradient(90deg, var(--su-blue-600), var(--su-blue-400), #22D3EE);
+    box-shadow: 0 0 22px 2px rgba(96, 165, 250, 0.55);
+}
+
+.su-card__header {
+    padding: 34px 40px 26px;
+    text-align: center;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    background: linear-gradient(180deg, rgba(37, 99, 235, 0.14), transparent);
+}
+
+.su-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 7px 16px 7px 12px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.su-brand__icon {
+    width: 20px;
+    height: 24px;
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.7));
+}
+
+.su-brand__name {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #F8FAFC;
+}
+
+.su-card__title {
+    margin: 0 0 8px;
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #F8FAFC;
+}
+
+.su-card__subtitle {
+    max-width: 52ch;
+    margin: 0 auto;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--su-muted);
+}
+
+.su-card__body {
+    padding: 32px 40px 34px;
+}
+
+/* 4. Alert ----------------------------------------------------------------- */
+.su-alert {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #FCA5A5;
+    background: rgba(248, 113, 113, 0.09);
+    border: 1px solid rgba(248, 113, 113, 0.32);
+    border-radius: var(--su-radius-field);
+}
+
+.su-alert svg {
+    flex: none;
+    color: var(--su-danger);
+}
+
+/* 5. Form sections --------------------------------------------------------- */
+.su-form {
+    margin: 0;
+}
+
+/* numbered because the form really is two steps */
+.su-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.su-section::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(96, 165, 250, 0.35), transparent);
+}
+
+.su-section__number {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--su-blue-600), var(--su-blue-500));
+    border-radius: 10px;
+    box-shadow: 0 6px 16px -6px rgba(37, 99, 235, 0.9);
+}
+
+.su-section__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #F1F5F9;
+}
+
+.su-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 16px;
+    margin-bottom: 32px;
+}
+
+.su-field {
+    min-width: 0;
+}
+
+.su-field--full {
+    grid-column: 1 / -1;
+}
+
+/* 6. Fields ---------------------------------------------------------------- */
+.su-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--su-blue-200);
+    transition: color 0.2s ease;
+}
+
+.su-field:focus-within .su-label {
+    color: var(--su-blue-400);
+}
+
+.su-required {
+    color: var(--su-danger);
+}
+
+.su-input-group {
+    position: relative;
+}
+
+.su-input-group__icon {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    display: grid;
+    place-items: center;
+    color: var(--su-muted);
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: color 0.2s ease;
+}
+
+.su-input-group__icon--text {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.su-input-group:focus-within .su-input-group__icon {
+    color: var(--su-blue-400);
+}
+
+.su-input {
+    display: block;
+    width: 100%;
+    padding: 13px 16px;
+    font: inherit;
+    font-size: 0.95rem;
+    color: #F8FAFC;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: var(--su-radius-field);
+    outline: none;
+    color-scheme: dark; /* dark date picker + scrollbars */
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.25s var(--su-ease);
+}
+
+.su-input--icon {
+    padding-left: 44px;
+}
+
+.su-input--prefix {
+    padding-left: 50px;
+}
+
+.su-input--mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: 0.04em;
+}
+
+.su-input--upper {
+    text-transform: uppercase;
+}
+
+.su-input--textarea {
+    min-height: 84px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.su-input::placeholder {
+    color: rgba(148, 163, 184, 0.65);
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+.su-input:hover {
+    border-color: rgba(96, 165, 250, 0.5);
+}
+
+.su-input:focus {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: var(--su-blue-500);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.22), 0 8px 24px -10px rgba(37, 99, 235, 0.7);
+}
+
+/* only flags after the user has interacted (no red on a fresh form) */
+.su-input:user-invalid {
+    border-color: rgba(248, 113, 113, 0.65);
+}
+
+.su-input:user-invalid:focus {
+    box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.18);
+}
+
+.su-input:-webkit-autofill,
+.su-input:-webkit-autofill:hover,
+.su-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #F8FAFC;
+    caret-color: #F8FAFC;
+    -webkit-box-shadow: 0 0 0 1000px #14213D inset;
+    transition: background-color 9999s ease-out 0s;
+}
+
+/* 7. Button ---------------------------------------------------------------- */
+.su-button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px 20px;
+    overflow: hidden;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--su-blue-600) 0%, var(--su-blue-500) 100%);
+    border: 1px solid rgba(147, 197, 253, 0.35);
+    border-radius: var(--su-radius-field);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 12px 28px -10px rgba(37, 99, 235, 0.9);
+    transition: transform 0.2s var(--su-ease), box-shadow 0.25s var(--su-ease), filter 0.2s ease, opacity 0.2s ease;
+}
+
+.su-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s var(--su-ease);
+}
+
+.su-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 18px 34px -10px rgba(59, 130, 246, 0.95);
+}
+
+.su-button:hover:not(:disabled)::after {
+    transform: translateX(120%);
+}
+
+.su-button:active:not(:disabled) {
+    transform: translateY(0);
+    filter: brightness(0.96);
+}
+
+.su-button:focus-visible {
+    outline: 2px solid var(--su-blue-200);
+    outline-offset: 3px;
+}
+
+.su-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.75;
+}
+
+.su-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: su-spin 0.75s linear infinite;
+}
+
+/* 8. Links / Footer -------------------------------------------------------- */
+.su-footer {
+    margin: 22px 0 0;
+    padding-top: 18px;
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--su-muted);
+    border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.su-link {
+    position: relative;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--su-blue-400);
+    transition: color 0.2s ease;
+}
+
+.su-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--su-ease);
+}
+
+.su-link:hover,
+.su-link:focus-visible {
+    color: var(--su-blue-200);
+    outline: none;
+}
+
+.su-link:hover::after,
+.su-link:focus-visible::after {
+    transform: scaleX(1);
+}
+
+/* 9. Responsive ------------------------------------------------------------ */
+@media (max-width: 640px) {
+    .su-page {
+        padding: 24px 14px 48px;
+    }
+
+    .su-card {
+        border-radius: 20px;
+    }
+
+    .su-card__header {
+        padding: 28px 22px 22px;
+    }
+
+    .su-card__body {
+        padding: 26px 22px 28px;
+    }
+
+    .su-card__title {
+        font-size: 1.4rem;
+    }
+
+    .su-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .su-card {
+        background: rgba(15, 23, 42, 0.95);
+    }
+}
+
+/* 10. Motion --------------------------------------------------------------- */
+@keyframes su-card-in {
+    from { opacity: 0; transform: translateY(18px) scale(0.985); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes su-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .su-card {
+        animation: none;
+    }
+
+    .su-page *,
+    .su-page *::after {
+        transition-duration: 0.01ms !important;
+    }
+}

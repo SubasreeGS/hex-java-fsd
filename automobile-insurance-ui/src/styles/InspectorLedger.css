@@ -1,0 +1,114 @@
+/* Layout and table styling for Inspector Ledgers */
+.card-header h5 {
+  letter-spacing: -0.01em;
+}
+
+.table th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  color: #64748b;
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table td {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  vertical-align: middle;
+}
+
+/* Form Controls & Toolbar Alignment */
+.form-select-sm,
+.form-control-sm {
+  font-size: 0.8125rem;
+  border-color: #cbd5e1;
+}
+
+.form-select-sm:focus,
+.form-control-sm:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+/* Fixed width & clean padding for Page Size selector so numbers don't clip */
+.inspector-size-select {
+  width: 85px;
+  padding-left: 0.5rem;
+  padding-right: 1.5rem;
+  text-align: center;
+}
+
+/* Reset Icon Button */
+.btn-inspector-reset {
+  width: 36px;
+  height: 31px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-color: #cbd5e1;
+  color: #64748b;
+  background-color: #ffffff;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-inspector-reset:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+/* Navigation Tabs */
+.nav-tabs .nav-link {
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.9rem;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.nav-tabs .nav-link.active {
+  border-bottom-color: #2563eb;
+  background: transparent;
+  font-weight: 700;
+}
+
+/* Pagination Buttons */
+.btn-group-sm > .btn {
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.65rem;
+}
+
+/* Soft Status Badges */
+.badge.bg-primary-subtle {
+  background-color: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border: 1px solid #bfdbfe;
+}
+
+.badge.bg-warning-subtle {
+  background-color: #fffbeb !important;
+  color: #b45309 !important;
+  border: 1px solid #fde68a;
+}
+
+.badge.bg-success-subtle {
+  background-color: #f0fdf4 !important;
+  color: #15803d !important;
+  border: 1px solid #bbf7d0;
+}
+
+.badge.bg-danger-subtle {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fecaca;
+}
+
+.badge.bg-secondary-subtle {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0;
+}

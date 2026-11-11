@@ -1,0 +1,110 @@
+/* Container Panel */
+.officer-pol-panel {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.officer-pol-header {
+  padding: 1.25rem 1.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Policy Card Styles */
+.policy-ledger-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.policy-ledger-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+}
+
+.policy-no-badge {
+  background-color: #0f172a;
+  color: #ffffff;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.plan-pill {
+  background-color: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+}
+
+/* 3-Column Layout & Dividers */
+.policy-col {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .policy-col-divider {
+    border-right: 1px solid #f1f5f9;
+  }
+}
+
+.field-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+/* Download Button */
+.btn-officer-download {
+  background-color: #047857;
+  color: #ffffff;
+  font-weight: 600;
+  border: 1px solid #047857;
+  transition: background-color 0.15s ease;
+}
+
+.btn-officer-download:hover {
+  background-color: #065f46;
+  color: #ffffff;
+}
+
+/* Modal Specs Box */
+.spec-field-box {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 12px 16px;
+}
+
+.spec-caption {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #64748b;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.modal-officer-header {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+.modal-officer-header .btn-close {
+  filter: invert(1);
+}

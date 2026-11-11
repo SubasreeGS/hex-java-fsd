@@ -1,0 +1,267 @@
+/* Container & Layout Architecture */
+.customer-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
+}
+
+/* Sticky Top Navigation Bar */
+.customer-topbar {
+  background-color: #0f172a;
+  padding: 0.75rem 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  z-index: 1020;
+}
+
+.brand-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.portal-tag {
+  background-color: #1e293b;
+  color: #38bdf8;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  border: 1px solid #334155;
+}
+
+.btn-topbar-logout {
+  background-color: transparent;
+  color: #cbd5e1;
+  border: 1px solid #334155;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-topbar-logout:hover {
+  background-color: #1e293b;
+  color: #ffffff;
+  border-color: #475569;
+}
+
+/* Body Container Grid */
+.dashboard-container {
+  display: flex;
+  flex: 1;
+}
+
+/* Sidebar Navigation */
+.customer-sidebar {
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.user-mini-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 1.25rem;
+}
+
+.avatar-badge {
+  width: 36px;
+  height: 36px;
+  background-color: #0f172a;
+  color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.nav-section-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  margin: 0.75rem 0 0.4rem 0.5rem;
+}
+
+.sidebar-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  color: #475569;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-nav-link:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.sidebar-nav-link.active {
+  background-color: #eff6ff;
+  color: #2563eb;
+  border: 1px solid #bfdbfe;
+}
+
+.nav-icon {
+  font-size: 1rem;
+}
+
+/* Main Workspace Canvas */
+.main-workspace {
+  flex: 1;
+  padding: 1.75rem;
+  overflow-y: auto;
+}
+
+/* ========================================================
+   Officer-Style Metric Cards (Full Coloured Border & Centered)
+   ======================================================== */
+.stat-card-widget {
+  background-color: #ffffff;
+  border-radius: 14px;
+  padding: 1.1rem 0.85rem;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  min-height: 165px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-card-widget:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+}
+
+/* Full All-Around Coloured Borders */
+.border-card-blue {
+  border: 3.5px solid #2563eb !important;
+}
+
+.border-card-amber {
+  border: 3.5px solid #f59e0b !important;
+}
+
+.border-card-slate {
+  border: 3.5px solid #1e293b !important;
+}
+
+.border-card-green {
+  border: 3.5px solid #10b981 !important;
+}
+
+/* Top Header Line: Title Centered */
+.stat-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  min-height: 38px;
+}
+
+.stat-widget-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #334155;
+  line-height: 1.25;
+  white-space: normal;
+  max-width: 90%;
+}
+
+/* Badge Icon (Optional if placed inside header) */
+.stat-widget-icon {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.stat-icon-blue {
+  background-color: #eff6ff;
+  border: 1px solid #dbeafe;
+}
+
+.stat-icon-amber {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+}
+
+.stat-icon-slate {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-icon-green {
+  background-color: #ecfdf5;
+  border: 1px solid #d1fae5;
+}
+
+/* Base Number Size for Standard Single-Digit Count Cards (2, 2, 3) */
+.stat-widget-number {
+  font-size: 1.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 0.35rem 0;
+  font-family: var(--bs-font-monospace, monospace);
+  white-space: nowrap;
+}
+
+/* Dedicated Currency Rule: Strictly Prevents ₹ Amount from Splitting Across 2 Lines */
+.stat-currency-number {
+  font-size: 1.35rem !important;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: block;
+}
+
+/* Bottom Explanatory Subtext */
+.stat-widget-subtext {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.dynamic-outlet-container {
+  width: 100%;
+}

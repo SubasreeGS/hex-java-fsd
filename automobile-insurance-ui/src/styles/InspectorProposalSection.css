@@ -1,0 +1,115 @@
+/* Container & Panels */
+.inspector-panel {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.inspector-panel-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1.25rem 1.75rem;
+}
+
+/* Job Inspection Cards */
+.survey-job-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  padding: 1.25rem 1.5rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.survey-job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+
+/* Card Section Columns */
+.survey-col {
+  padding-right: 1.25rem;
+  padding-left: 1.25rem;
+}
+
+.survey-col-divider {
+  border-right: 1px solid #f1f5f9;
+}
+
+@media (max-width: 991.98px) {
+  .survey-col-divider {
+    border-right: none;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Badges & Chips */
+.reg-no-badge {
+  background-color: #1e3a8a;
+  color: #ffffff;
+  font-family: var(--bs-font-monospace, monospace);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.plan-type-pill {
+  background-color: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50rem;
+}
+
+.field-label {
+  color: #64748b;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Modal Customization */
+.modal-survey-header {
+  background-color: #0f172a;
+  color: #ffffff;
+}
+
+.modal-survey-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.modal-vehicle-preview {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+/* Toolbar Layout */
+.form-select-sm {
+  font-size: 0.8125rem;
+}
+
+.btn-outline-secondary {
+  border-color: #cbd5e1;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+/* Pagination Buttons */
+.btn-group-sm > .btn {
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.65rem;
+}

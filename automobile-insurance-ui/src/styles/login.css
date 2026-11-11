@@ -1,0 +1,524 @@
+/* ==========================================================================
+   AutoSure — Login page (full website layout)
+   Sections: 1 Tokens · 2 Page · 3 Hero · 4 Card · 5 Form · 6 Button
+             7 Links · 8 Responsive · 9 Motion
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap');
+
+/* 1. Tokens ---------------------------------------------------------------- */
+.as-page {
+    --as-navy: #0F172A;
+    --as-navy-deep: #0A1020;
+    --as-blue-600: #2563EB;
+    --as-blue-500: #3B82F6;
+    --as-blue-400: #60A5FA;
+    --as-blue-200: #BFDBFE;
+    --as-text: #E2E8F0;
+    --as-muted: #94A3B8;
+    --as-danger: #F87171;
+    --as-glass: rgba(15, 23, 42, 0.66);
+    --as-border: rgba(96, 165, 250, 0.24);
+    --as-radius-card: 24px;
+    --as-radius-field: 12px;
+    --as-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 2. Page ------------------------------------------------------------------ */
+.as-page {
+    position: relative;
+    isolation: isolate;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    overflow: hidden;
+    font-family: 'Sora', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: var(--as-text);
+    background:
+        radial-gradient(900px 560px at 18% 12%, rgba(37, 99, 235, 0.34), transparent 62%),
+        radial-gradient(760px 520px at 95% 100%, rgba(59, 130, 246, 0.24), transparent 60%),
+        linear-gradient(180deg, var(--as-navy) 0%, var(--as-navy-deep) 100%);
+}
+
+/* subtle grid texture */
+.as-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+        linear-gradient(rgba(96, 165, 250, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96, 165, 250, 0.06) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse at 40% 45%, #000 15%, transparent 72%);
+            mask-image: radial-gradient(ellipse at 40% 45%, #000 15%, transparent 72%);
+}
+
+/* 3. Hero ------------------------------------------------------------------ */
+.as-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 56px clamp(28px, 5vw, 72px) 32px;
+}
+
+.as-hero__content {
+    max-width: 540px;
+}
+
+.as-hero__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 48px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #F8FAFC;
+}
+
+.as-hero__brand-mark {
+    width: 30px;
+    height: 35px;
+    filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.7));
+}
+
+.as-hero__headline {
+    margin: 0 0 18px;
+    font-size: clamp(2rem, 3.6vw, 3.1rem);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: #F8FAFC;
+}
+
+.as-hero__text {
+    margin: 0 0 28px;
+    max-width: 46ch;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--as-muted);
+}
+
+.as-hero__features {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+}
+
+.as-hero__features li {
+    position: relative;
+    padding-left: 30px;
+    font-size: 0.9375rem;
+    color: var(--as-text);
+}
+
+/* check bullet drawn in CSS */
+.as-hero__features li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.2) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'><path d='M5 9.3l2.7 2.7L13 6.5' fill='none' stroke='%2393C5FD' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / 18px no-repeat;
+    border: 1px solid rgba(96, 165, 250, 0.4);
+}
+
+.as-hero__image {
+    display: block;
+    width: min(100%, 640px);
+    height: auto;
+    margin-top: auto;
+    align-self: flex-start;
+    filter: drop-shadow(0 24px 40px rgba(37, 99, 235, 0.35));
+    animation: as-drive-in 1s var(--as-ease) both;
+}
+
+/* Optional: use a real photo behind the hero instead of the plain gradient.
+   Put the image in /public and uncomment:
+.as-hero {
+    background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.75), rgba(10, 16, 32, 0.95)),
+        url('/hero-car.jpg') center / cover no-repeat;
+}
+*/
+
+/* 4. Card ------------------------------------------------------------------ */
+.as-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+}
+
+.as-card {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    padding: 44px 40px 36px;
+    border-radius: var(--as-radius-card);
+    background: var(--as-glass);
+    border: 1px solid var(--as-border);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+            backdrop-filter: blur(18px) saturate(140%);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.06) inset,
+        0 30px 60px -20px rgba(2, 6, 23, 0.85),
+        0 0 80px -30px rgba(37, 99, 235, 0.55);
+    animation: as-card-in 0.7s var(--as-ease) both;
+}
+
+/* headlight strip along the top edge */
+.as-card::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 14%;
+    right: 14%;
+    height: 2px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent, var(--as-blue-400), transparent);
+    box-shadow: 0 0 18px 2px rgba(96, 165, 250, 0.6);
+}
+
+.as-card__header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.as-card__mark {
+    width: 40px;
+    height: 47px;
+    margin-bottom: 12px;
+    filter: drop-shadow(0 0 14px rgba(59, 130, 246, 0.65));
+}
+
+.as-card__title {
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #F8FAFC;
+}
+
+.as-card__subtitle {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--as-muted);
+}
+
+/* error area collapses when empty */
+.as-card__feedback {
+    text-align: center;
+}
+
+.as-card__feedback:has(.as-card__error:empty):has(.as-card__error-comment:empty) {
+    display: none;
+}
+
+.as-card__feedback {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border-radius: var(--as-radius-field);
+    background: rgba(248, 113, 113, 0.09);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.as-card__error {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--as-danger);
+}
+
+.as-card__error-comment {
+    margin: 4px 0 0;
+    font-size: 0.8125rem;
+    color: var(--as-muted);
+}
+
+.as-card__error:empty,
+.as-card__error-comment:empty {
+    display: none;
+}
+
+/* 5. Form ------------------------------------------------------------------ */
+.as-form {
+    margin: 0;
+}
+
+.as-field {
+    margin-bottom: 18px;
+}
+
+.as-field__label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.as-field__label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--as-blue-200);
+    transition: color 0.2s ease;
+}
+
+.as-field:focus-within .as-field__label {
+    color: var(--as-blue-400);
+}
+
+.as-field__control {
+    position: relative;
+}
+
+.as-field__input {
+    display: block;
+    width: 100%;
+    padding: 14px 16px;
+    font: inherit;
+    font-size: 1rem;
+    color: #F8FAFC;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: var(--as-radius-field);
+    outline: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.25s var(--as-ease);
+}
+
+.as-field__input--has-toggle {
+    padding-right: 48px;
+}
+
+.as-field__input::placeholder {
+    color: rgba(148, 163, 184, 0.7);
+    letter-spacing: 0.15em;
+}
+
+.as-field__input:hover {
+    border-color: rgba(96, 165, 250, 0.5);
+}
+
+.as-field__input:focus {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: var(--as-blue-500);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.22), 0 8px 24px -10px rgba(37, 99, 235, 0.7);
+}
+
+.as-field__input:-webkit-autofill,
+.as-field__input:-webkit-autofill:hover,
+.as-field__input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #F8FAFC;
+    caret-color: #F8FAFC;
+    -webkit-box-shadow: 0 0 0 1000px #14213D inset;
+    transition: background-color 9999s ease-out 0s;
+}
+
+/* show / hide password */
+.as-field__toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    color: var(--as-muted);
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    border-radius: 10px;
+    transform: translateY(-50%);
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.as-field__toggle:hover {
+    color: var(--as-blue-200);
+    background: rgba(96, 165, 250, 0.12);
+}
+
+.as-field__toggle:focus-visible {
+    outline: 2px solid var(--as-blue-400);
+}
+
+/* 6. Button ---------------------------------------------------------------- */
+.as-button {
+    position: relative;
+    display: block;
+    width: 100%;
+    margin: 26px 0 20px;
+    padding: 14px 20px;
+    overflow: hidden;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--as-blue-600) 0%, var(--as-blue-500) 100%);
+    border: 1px solid rgba(147, 197, 253, 0.35);
+    border-radius: var(--as-radius-field);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.25) inset, 0 12px 28px -10px rgba(37, 99, 235, 0.9);
+    transition: transform 0.2s var(--as-ease), box-shadow 0.25s var(--as-ease), filter 0.2s ease;
+}
+
+.as-button::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.28) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.7s var(--as-ease);
+}
+
+.as-button:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.08);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.3) inset, 0 18px 34px -10px rgba(59, 130, 246, 0.95);
+}
+
+.as-button:hover::after {
+    transform: translateX(120%);
+}
+
+.as-button:active {
+    transform: translateY(0);
+    filter: brightness(0.96);
+}
+
+.as-button:focus-visible {
+    outline: 2px solid var(--as-blue-200);
+    outline-offset: 3px;
+}
+
+/* 7. Links ----------------------------------------------------------------- */
+.as-link {
+    position: relative;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--as-blue-400);
+    transition: color 0.2s ease;
+}
+
+.as-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--as-ease);
+}
+
+.as-link:hover,
+.as-link:focus-visible {
+    color: var(--as-blue-200);
+    outline: none;
+}
+
+.as-link:hover::after,
+.as-link:focus-visible::after {
+    transform: scaleX(1);
+}
+
+.as-link--small {
+    margin-bottom: 8px;
+    font-size: 0.8125rem;
+}
+
+.as-form__footer {
+    margin: 0;
+    padding-top: 18px;
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--as-muted);
+    border-top: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+/* 8. Responsive ------------------------------------------------------------ */
+@media (max-width: 960px) {
+    .as-page {
+        grid-template-columns: 1fr;
+    }
+
+    /* login first, brand/hero below */
+    .as-panel {
+        order: -1;
+        padding-top: 48px;
+    }
+
+    .as-hero {
+        padding: 8px 24px 40px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .as-hero__brand,
+    .as-hero__features {
+        display: none;
+    }
+
+    .as-hero__text {
+        display: none;
+    }
+
+    .as-hero__headline {
+        margin: 0;
+        font-size: 1.6rem;
+    }
+
+    .as-hero__image {
+        width: min(100%, 460px);
+        align-self: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .as-panel {
+        padding: 28px 16px;
+    }
+
+    .as-card {
+        padding: 34px 22px 28px;
+        border-radius: 20px;
+    }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .as-card {
+        background: rgba(15, 23, 42, 0.94);
+    }
+}
+
+/* 9. Motion ---------------------------------------------------------------- */
+@keyframes as-card-in {
+    from { opacity: 0; transform: translateY(18px) scale(0.985); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes as-drive-in {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .as-card,
+    .as-hero__image {
+        animation: none;
+    }
+
+    .as-page *,
+    .as-page *::after {
+        transition-duration: 0.01ms !important;
+    }
+}
